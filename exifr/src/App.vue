@@ -8,6 +8,14 @@
     <input type="checkbox" v-model="hasHeader">
     <br/>
     <span>Has Header</span><br/><br/>
+
+    <span>Image Name: </span>
+    <select v-model="imgname">
+      <option disabled value="">Select Image</option>
+      <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
+    </select>
+    <br/><br/>
+
     <span>Latitude: </span>
     <select v-model="latitudecolumn">
       <option disabled value="">Select Latitude</option>
@@ -50,6 +58,7 @@ export default defineComponent({
 
     const hasHeader = ref(true);
 
+    const imgnamecolumn = ref();
     const latitudecolumn = ref();
     const longitudecolumn = ref();
     const altitudeecolumn = ref();
@@ -57,7 +66,8 @@ export default defineComponent({
     const columnList = ref(['col1', 'col2', 'col3']);
 
     const csvParams = {
-      hasHeader, latitudecolumn, longitudecolumn, altitudeecolumn, columnList
+      hasHeader, 
+      imgnamecolumn, latitudecolumn, longitudecolumn, altitudeecolumn, columnList
     };
 
     const selectimagesdir = () => {
