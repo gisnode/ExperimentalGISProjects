@@ -6,9 +6,32 @@
     <button class="inputbtn" v-on:click="selectcsvfile">Select CSV File</button>
     <div class="clientmsg">{{ csvpath }}</div>
     <input type="checkbox" v-model="hasHeader">
-    <span>Has Header</span><br/>
+    <br/>
+    <span>Has Header</span><br/><br/>
+    <span>Latitude: </span>
+    <select v-model="latitudecolumn">
+      <option disabled value="">Select Latitude</option>
+      <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
+    </select>
+    <br/><br/>
+
+    <span>Longitude: </span>
+    <select v-model="latitudecolumn">
+      <option disabled value="">Select Latitude</option>
+      <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
+    </select>
+    <br/><br/>
+
+    <span>Altitude: </span>
+    <select v-model="latitudecolumn">
+      <option disabled value="">Select Latitude</option>
+      <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
+    </select>
+    <br/><br/>
+
     <button class="inputbtn" v-on:click="selectoutdir">Select Output Folder</button>
     <div class="clientmsg">{{ outdir }}</div>
+    <button class="inputbtn" v-on:click="startexifing">Start EXIFR</button>
   </div>
 </template>
 
@@ -26,6 +49,16 @@ export default defineComponent({
     const outdir = ref('Y://folde21');
 
     const hasHeader = ref(true);
+
+    const latitudecolumn = ref();
+    const longitudecolumn = ref();
+    const altitudeecolumn = ref();
+
+    const columnList = ref(['col1', 'col2', 'col3']);
+
+    const csvParams = {
+      hasHeader, latitudecolumn, longitudecolumn, altitudeecolumn, columnList
+    };
 
     const selectimagesdir = () => {
       ipcRenderer.send('open-folder', ['Select Images Folder', 'imagesfolder']);
@@ -51,10 +84,15 @@ export default defineComponent({
       outdir.value = arg;
     });
 
+    const startexifing = () => {
+      console.log('yes started');
+    }
+
     return {
       imagesdir, csvpath, outdir,
       selectimagesdir, selectcsvfile, selectoutdir,
-      hasHeader
+      ...csvParams,
+      startexifing
     }
 
   },
