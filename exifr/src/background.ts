@@ -22,7 +22,7 @@ async function createWindow() {
       nodeIntegration: (process.env
           .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-      devTools: false
+      // devTools: false
     },
     // frame: false
   })
