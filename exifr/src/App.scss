@@ -1,8 +1,38 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    border: 0;
+    padding: 0;
+}
+
 #approot {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
-    margin-top: 60px;
+    margin-top: 40px;
+}
+
+.inputbtn {
+    padding: 10px;
+    background-color: rgba(207, 148, 38, 0.486);
+
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 14px;
+
+    &:active {
+        background-color: rgba(187, 38, 207, 0.486);
+    }
+}
+
+.clientmsg {
+    color: rgba(40, 65, 207, 0.596);
+    font-size: 14px;
 }
