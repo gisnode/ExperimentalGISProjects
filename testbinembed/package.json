@@ -10,9 +10,22 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
-  "main": "background.js",
+  "build":{
+    "extraFiles": [
+      {
+        "from": "resources/bin",
+        "to": "Resources/bin",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
   "dependencies": {
     "core-js": "^3.8.3",
+    "electron-is-packaged": "^1.0.2",
+    "electron-root-path": "^1.0.16",
+    "ts-loader": "~8.2.0",
     "vue": "^3.2.13"
   },
   "devDependencies": {

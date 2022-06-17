@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain  } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -59,7 +59,7 @@ app.on('ready', async () => {
     // Install Vue Devtools
     try {
       await installExtension(VUEJS3_DEVTOOLS)
-    } catch (e) {
+    } catch (e: any) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
@@ -80,3 +80,21 @@ if (isDevelopment) {
     })
   }
 }
+
+import path from 'path';
+const { rootPath } = require('electron-root-path');
+const { isPackaged } = require('electron-is-packaged');
+
+const IS_PROD = process.env.NODE_ENV === 'production';
+
+const binariesPath = IS_PROD && isPackaged // the path to a bundled electron app.
+        ? path.join(rootPath, './Contents', './Resources', './bin')
+        : path.join(rootPath, './build', './bin');
+
+ipcMain.on('hey-done', (evt, arg) => {
+  console.log('Logging from Main Process...');
+  console.log(rootPath);
+  console.log(isPackaged);
+
+  console.log(path.resolve(binariesPath, './exiv2.exe'));
+});

@@ -8,10 +8,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import { ipcRenderer } from 'electron';
+
 export default defineComponent({
   setup() {
     const doSomething = () => {
       console.log('Doing Now...');
+      ipcRenderer.send('hey-done');
     }
 
     return {
