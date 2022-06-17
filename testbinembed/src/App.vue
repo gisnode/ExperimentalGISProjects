@@ -1,6 +1,7 @@
 <template>
   <div id="approot">
-    Hello App
+    <div>Hello App</div><br>
+    <div><button v-on:click="doSomething">DoSomething</button></div>
   </div>
 </template>
 
@@ -9,7 +10,13 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
   setup() {
-    
+    const doSomething = () => {
+      console.log('Doing Now...');
+    }
+
+    return {
+      doSomething
+    }
   },
 })
 </script>
