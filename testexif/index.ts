@@ -3,7 +3,9 @@ import path from 'path';
 
 import { parse } from 'csv-parse/sync';
 
-let folderpath = 'G:/exifrtest/imgs';
+import { execSync } from 'child_process';
+
+let folderpath = 'G:/exifrtest/imgs/mod';
 let csvpath = 'G:/exifrtest/imgs/geo.csv';
 
 const degToDmsRational = (degFloat: any) => {
@@ -39,11 +41,12 @@ for (let i = 0; i < records.length; i++){
     exifArray.push('-M"set Exif.GPSInfo.GPSLongitudeRef E"');
     exifArray.push(`-M"set Exif.GPSInfo.GPSLongitude ${degToDmsRational(lon)}"`);
     exifArray.push('-M"set Exif.GPSInfo.GPSAltitudeRef 0"');
-    exifArray.push(`-M"set Exif.GPSInfo.GPSAltitude ${Math.round(alt * 100)}/100"`);
+    exifArray.push(`-M"set Exif.GPSInfo.GPSAltitude ${Math.round(alt * 1000)}/1000"`);
     exifArray.push('-M"set Exif.GPSInfo.GPSStatus V"');
     exifArray.push('-M"set Exif.GPSInfo.GPSMapDatum WGS-84"');
     exifArray.push('-M"set Exif.GPSInfo.GPSDifferential 0"');
 
+    // console.log(exifArray);
     mappedObjects[image] = exifArray.join(' ');
 }
 
@@ -56,6 +59,12 @@ const jpgimgs = files.filter(img => {
 // console.log(jpgimgs);
 
 for (let i = 0; i < jpgimgs.length; i++){
-    console.log(jpgimgs[i]);
-    console.log(mappedObjects[jpgimgs[i]]);
+    // console.log(jpgimgs[i]);
+    // console.log(mappedObjects[jpgimgs[i]]);
+
+    let cmd = `G:/bin/exiv2.exe ${mappedObjects[jpgimgs[i]]} ${path.join(folderpath, jpgimgs[i])}`;
+    // console.log(cmd);
+    console.time(`${jpgimgs[i]}`);
+    execSync(cmd);
+    console.timeEnd(`${jpgimgs[i]}`);
 }
