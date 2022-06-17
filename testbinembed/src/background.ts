@@ -5,6 +5,9 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+import path from 'path';
+import { spawn } from 'child_process';
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -81,20 +84,20 @@ if (isDevelopment) {
   }
 }
 
-import path from 'path';
-const { rootPath } = require('electron-root-path');
-const { isPackaged } = require('electron-is-packaged');
-
-const IS_PROD = process.env.NODE_ENV === 'production';
-
-const binariesPath = IS_PROD && isPackaged // the path to a bundled electron app.
-        ? path.join(rootPath, './Contents', './Resources', './bin')
-        : path.join(rootPath, './build', './bin');
+const binariesPath = !isDevelopment && app.isPackaged
+    ? path.join(path.dirname(app.getAppPath()), '..', './Resources', './bin')
+    : path.join(process.cwd(), './resources', './bin');
 
 ipcMain.on('hey-done', (evt, arg) => {
   console.log('Logging from Main Process...');
-  console.log(rootPath);
-  console.log(isPackaged);
 
-  console.log(path.resolve(binariesPath, './exiv2.exe'));
+  const execPath = path.resolve(path.join(binariesPath, './exiv2.exe'));
+
+  console.log(execPath);
+  const j = spawn(execPath);
+
+  j.stdout.on('data', (data) => {
+    evt.sender.send('msg', data.toString());
+  });
+
 });

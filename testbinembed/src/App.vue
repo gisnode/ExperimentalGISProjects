@@ -1,24 +1,32 @@
 <template>
   <div id="approot">
     <div>Hello App</div><br>
-    <div><button v-on:click="doSomething">DoSomething</button></div>
+    <div><button v-on:click="doSomething">DoSomething</button></div><br>
+    <div>{{ msg }}</div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 import { ipcRenderer } from 'electron';
 
 export default defineComponent({
   setup() {
+    const msg = ref('joojoo');
+
     const doSomething = () => {
       console.log('Doing Now...');
       ipcRenderer.send('hey-done');
     }
 
+    ipcRenderer.on('msg', (event, arg) => {
+      console.log(arg);
+      msg.value = arg;
+    });
+
     return {
-      doSomething
+      doSomething, msg
     }
   },
 })
