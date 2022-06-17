@@ -8,7 +8,7 @@ module.exports = defineConfig({
         extraResources: [
           {
             "from": "resources/bin",
-            "to": "Resources/bin",
+            "to": "bin",
             "filter": [
               "**/*"
             ]

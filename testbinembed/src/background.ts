@@ -85,7 +85,7 @@ if (isDevelopment) {
 }
 
 const binariesPath = !isDevelopment && app.isPackaged
-    ? path.join(path.dirname(app.getAppPath()), '..', './Resources', './bin')
+    ? path.join(path.dirname(app.getAppPath()), './resources', './bin')
     : path.join(process.cwd(), './resources', './bin');
 
 ipcMain.on('hey-done', (evt, arg) => {
