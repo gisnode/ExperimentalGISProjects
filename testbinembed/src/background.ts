@@ -84,6 +84,7 @@ if (isDevelopment) {
   }
 }
 
+// app.getAppPath gets you to the resouces path inside packaged app
 const binariesPath = !isDevelopment && app.isPackaged
     ? path.join(path.dirname(app.getAppPath()), './bin')
     : path.join(process.cwd(), './resources', './bin');
