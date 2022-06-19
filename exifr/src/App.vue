@@ -3,8 +3,8 @@
     <div class="title">GPS EXIFR</div>
     <table style="margin: auto;">
       <tr>
-        <td><button class="inputbtn" v-on:click="selectimagesdir">Select Images Folder</button></td>
-        <td><button class="inputbtn" v-on:click="selectcsvfile">Select CSV File</button></td>
+        <td><button class="inputbtn" v-on:click="selectimagesdir" v-bind:disabled="exifing">Select Images Folder</button></td>
+        <td><button class="inputbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">Select CSV File</button></td>
       </tr>
       <tr>
         <td><span>{{ imagesdirdisplay }}</span></td>
@@ -30,9 +30,9 @@
           </select>
         </td>
         <td>
-          <span>Latitude</span>
+          <span>Longitude</span>
         </td><td>
-          <select v-model="latitudecolumn">
+          <select v-model="longitudecolumn">
             <option disabled value="">Select Column</option>
             <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
           </select>
@@ -40,9 +40,9 @@
       </tr>
       <tr>
         <td>
-          <span>Longitude</span>
+          <span>Latitude</span>
         </td><td>
-          <select v-model="longitudecolumn">
+          <select v-model="latitudecolumn">
             <option disabled value="">Select Column</option>
             <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
           </select>
@@ -60,7 +60,7 @@
     
     <br>
     <div class="clientmsg">{{ statusmsg }}</div>
-    <button class="cmdbtn" v-on:click="startexifing">XIF GPS</button>
+    <button class="cmdbtn" v-on:click="startexifing" v-bind:disabled="exifing">XIF GPS</button>
     <button class="cmdbtn" v-on:click="exitnow">Exit</button>
   </div>
 </template>
@@ -91,16 +91,18 @@ export default defineComponent({
     const hasHeader = ref(false);
 
     const imgnamecolumn = ref();
-    const latitudecolumn = ref();
     const longitudecolumn = ref();
+    const latitudecolumn = ref();
     const altitudeecolumn = ref();
 
-    const csvContentParse = ref();
+    const csvContentParsed = ref();
+
+    const exifing = ref(false);
 
     const resetColumns = () => {
       imgnamecolumn.value = '';
-      latitudecolumn.value = '';
       longitudecolumn.value = '';
+      latitudecolumn.value = '';
       altitudeecolumn.value = '';
     }
 
@@ -109,7 +111,7 @@ export default defineComponent({
       if (hasHeader.value){
         resetColumns();
 
-        return csvContentParse.value[0];
+        return csvContentParsed.value[0];
       } else {
         setNumericColumns();
         return ['1', '2', '3', '4'];
@@ -118,7 +120,7 @@ export default defineComponent({
 
     const csvParams = {
       hasHeader, csvLoaded,
-      imgnamecolumn, latitudecolumn, longitudecolumn, altitudeecolumn, columnList
+      imgnamecolumn, longitudecolumn, latitudecolumn, altitudeecolumn, columnList
     };
 
     const selectimagesdir = () => {
@@ -139,7 +141,7 @@ export default defineComponent({
     ipcRenderer.on('imagesfolder', (event, arg) => {
       imagesdir.value = arg;
       
-      let foldername = path.basename(path.dirname(arg));
+      let foldername = path.basename(arg);
       imagesdirdisplay.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
     });
 
@@ -162,14 +164,14 @@ export default defineComponent({
         delimiter: ','
       });
 
-      console.log(csvParsed);
-      csvContentParse.value = csvParsed;
+      // console.log(csvParsed);
+      csvContentParsed.value = csvParsed;
     }
 
     const setNumericColumns = () => {
       imgnamecolumn.value = '1';
-      latitudecolumn.value = '2';
-      longitudecolumn.value = '3';
+      longitudecolumn.value = '2';
+      latitudecolumn.value = '3';
       altitudeecolumn.value = '4';
     }
 
@@ -182,9 +184,34 @@ export default defineComponent({
       setNumericColumns();
     }
 
-    const startexifing = () => {
-      console.log('yes started');
+    const doExif = () => {
+      const csvRows = csvContentParsed.value;
+      // console.log(csvRows);
 
+      let imgIndex = parseInt(imgnamecolumn.value) - 1;
+      let lonIndex = parseInt(longitudecolumn.value) - 1;
+      let latIndex = parseInt(latitudecolumn.value) - 1;
+      let altIndex = parseInt(altitudeecolumn.value) - 1;
+
+      let startIndex = hasHeader.value ? 1 : 0;
+
+      for(let i = startIndex; i < 5; i++){
+        let imagename = csvRows[i][imgIndex];
+        let longitude = csvRows[i][lonIndex];
+        let latitude = csvRows[i][latIndex];
+        let altitude = csvRows[i][altIndex];
+
+        console.log(imagename, longitude, latitude, altitude);
+      }
+    }
+
+    const startexifing = () => {
+      statusmsg.value = 'Started';
+      // exifing.value = true;
+
+      setTimeout(() => {
+        doExif();
+      }, 500);
     }
 
     const exitnow = () => {
@@ -195,7 +222,7 @@ export default defineComponent({
       statusmsg, imagesdirdisplay, csvpathdisplay,
       selectimagesdir, selectcsvfile,
       ...csvParams,
-      startexifing, exitnow
+      startexifing, exitnow, exifing
     }
 
   },
