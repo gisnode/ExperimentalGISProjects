@@ -1,45 +1,72 @@
 <template>
   <div id="approot">
-    <div style="font-size:20px;">EXIFR</div><br/>
-    <button class="inputbtn" v-on:click="selectimagesdir">Select Images Folder</button>
-    <div class="clientmsg">{{ imagesdir }}</div>
-    <button class="inputbtn" v-on:click="selectcsvfile">Select CSV File</button>
-    <div class="clientmsg">{{ csvpath }}</div>
-    <input type="checkbox" v-model="hasHeader">
-    <br/>
-    <span>Has Header</span><br/><br/>
+    <div class="title">EXIFR</div>
+    <table style="margin: auto;">
+      <tr>
+        <td><button class="inputbtn" v-on:click="selectimagesdir">Select Images Folder</button></td>
+        <td><button class="inputbtn" v-on:click="selectcsvfile">Select CSV File</button></td>
+      </tr>
+      <tr>
+        <td><span>{{ imagesdir }}</span></td>
+        <td><span>{{ csvpath }}</span></td>
+      </tr>
+    </table>
 
-    <span>Image Name: </span>
-    <select v-model="imgname">
-      <option disabled value="">Select Image</option>
-      <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
-    </select>
-    <br/><br/>
-
-    <span>Latitude: </span>
-    <select v-model="latitudecolumn">
-      <option disabled value="">Select Latitude</option>
-      <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
-    </select>
-    <br/><br/>
-
-    <span>Longitude: </span>
-    <select v-model="latitudecolumn">
-      <option disabled value="">Select Latitude</option>
-      <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
-    </select>
-    <br/><br/>
-
-    <span>Altitude: </span>
-    <select v-model="latitudecolumn">
-      <option disabled value="">Select Latitude</option>
-      <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
-    </select>
-    <br/><br/>
-
-    <button class="inputbtn" v-on:click="selectoutdir">Select Output Folder</button>
-    <div class="clientmsg">{{ outdir }}</div>
-    <button class="inputbtn" v-on:click="startexifing">Start EXIFR</button>
+    <table style="margin: auto;">
+      <tr>
+        <td>
+          <button class="inputbtn" v-on:click="selectoutdir">Select Output Folder</button>
+          <div>{{ outdir }}</div>
+        </td>
+        <td><span>Has Header</span><br><input type="checkbox" v-model="hasHeader"></td>
+      </tr>
+    </table>
+    <br>
+    <table style="margin: auto;">
+      <tr>
+        <td>
+          <span>Image Name</span>
+        </td><td>
+          <select v-model="imgname">
+            <option disabled value="">Select Column</option>
+            <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
+          </select>
+        </td>
+        <td>
+          <span>Latitude</span>
+        </td><td>
+          <select v-model="latitudecolumn">
+            <option disabled value="">Select Column</option>
+            <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span>Longitude</span>
+        </td><td>
+          <select v-model="imgname">
+            <option disabled value="">Select Column</option>
+            <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
+          </select>
+        </td>
+        <td>
+          <span>Altitude</span>
+        </td><td>
+          <select v-model="latitudecolumn">
+            <option disabled value="">Select Column</option>
+            <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+    
+    <div class="clientmsg">
+      
+    </div>
+    <br>
+    <button class="cmdbtn" v-on:click="startexifing">Start EXIFR</button>
+    <button class="cmdbtn" v-on:click="startexifing">Exit</button>
   </div>
 </template>
 

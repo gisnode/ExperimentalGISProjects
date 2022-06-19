@@ -1,5 +1,16 @@
+@font-face {
+    font-family: 'Lobster-Regular';
+    src: url('./resources/fonts/Lobster-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'LeagueGothic-Regular';
+    src: url('./resources/fonts/LeagueGothic-Regular.ttf');
+}
+
 * {
     box-sizing: border-box;
+    font-family: 'LeagueGothic-Regular';
 }
 
 html, body {
@@ -9,12 +20,15 @@ html, body {
 }
 
 #approot {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
     margin-top: 40px;
+}
+
+.title {
+    font-family: 'Lobster-Regular';
+    font-size: 35px;
+    text-shadow: 4px 4px rgba(255, 0, 0, 0.2);
 }
 
 .inputbtn {
@@ -24,6 +38,20 @@ html, body {
     margin: 10px;
     border: none;
     border-radius: 10px;
+    color: white;
+    font-size: 14px;
+
+    &:active {
+        background-color: rgba(187, 38, 207, 0.486);
+    }
+}
+
+.cmdbtn {
+    padding: 10px;
+    background-color: rgba(207, 77, 38, 0.726);
+
+    margin: 10px;
+    border: none;
     color: white;
     font-size: 14px;
 
