@@ -187,11 +187,15 @@ export default defineComponent({
 
     }
 
+    const exitnow = () => {
+      ipcRenderer.send('exit-now');
+    }
+
     return {
       statusmsg, imagesdirdisplay, csvpathdisplay,
       selectimagesdir, selectcsvfile,
       ...csvParams,
-      startexifing
+      startexifing, exitnow
     }
 
   },

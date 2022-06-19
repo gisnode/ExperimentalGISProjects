@@ -108,3 +108,7 @@ ipcMain.on('open-file', (evt, arg) => {
     }
   });  
 });
+
+ipcMain.on('exit-now', (evt, arg) => {
+  app.exit();
+});
