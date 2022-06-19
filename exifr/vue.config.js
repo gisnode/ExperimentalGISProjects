@@ -8,7 +8,18 @@ module.exports = defineConfig({
                 icon: 'src/assets/icon.png'
             }
         },
-        nodeIntegration: true
+        nodeIntegration: true,
+        builderOptions: {
+            extraResources: [
+              {
+                "from": "resources/bin",
+                "to": "bin",
+                "filter": [
+                  "**/*"
+                ]
+              }
+            ]
+        }
     }
 }
 })

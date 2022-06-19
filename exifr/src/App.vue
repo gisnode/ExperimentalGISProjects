@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, onMounted } from 'vue';
 import { ref } from '@vue/reactivity';
 import './App.scss';
 
@@ -75,6 +75,8 @@ import path from 'path';
 
 import { ipcRenderer } from 'electron';
 import { parse } from 'csv-parse/sync';
+
+import { execSync } from 'child_process';
 
 export default defineComponent({
   setup() {
@@ -184,6 +186,56 @@ export default defineComponent({
       setNumericColumns();
     }
 
+    const getBinaryPath = () => {
+      ipcRenderer.send('binary-path');
+    }
+
+    const execPath = ref('');
+
+    ipcRenderer.on('binary-path', (event, arg) => {
+      console.log(arg);
+      execPath.value = path.resolve(path.join(arg, './exiv2.exe'));
+    });
+
+    onMounted(() => {
+      getBinaryPath();
+    });
+
+    const degToDmsRational = (degFloat: any) => {
+      let secDigits = 5;
+
+      let degAbs = Math.abs(degFloat);
+      let minFloat = degAbs % 1 * 60;
+      let secFloat = minFloat % 1 * 60;
+      let deg = Math.floor(degAbs);
+      let min = Math.floor(minFloat);
+      let sec = Math.round(secFloat * 10 ** secDigits);
+
+      return `${deg}/1 ${min}/1 ${sec}/${10 ** secDigits}`;
+    }
+
+    const modifyExif = (imagename: any, longitude: any, latitude: any, altitude: any) => {
+      let exifArray: any = [];
+      exifArray.push('-M"set Exif.GPSInfo.GPSVersionID 2 3 0 0"');
+      exifArray.push('-M"set Exif.GPSInfo.GPSLatitudeRef N"');
+      exifArray.push(`-M"set Exif.GPSInfo.GPSLatitude ${degToDmsRational(latitude)}"`);
+      exifArray.push('-M"set Exif.GPSInfo.GPSLongitudeRef E"');
+      exifArray.push(`-M"set Exif.GPSInfo.GPSLongitude ${degToDmsRational(longitude)}"`);
+      exifArray.push('-M"set Exif.GPSInfo.GPSAltitudeRef 0"');
+      exifArray.push(`-M"set Exif.GPSInfo.GPSAltitude ${Math.round(altitude * 1000)}/1000"`);
+      exifArray.push('-M"set Exif.GPSInfo.GPSStatus V"');
+      exifArray.push('-M"set Exif.GPSInfo.GPSMapDatum WGS-84"');
+      exifArray.push('-M"set Exif.GPSInfo.GPSDifferential 0"');
+
+      let exifCLI = exifArray.join(' ');
+
+      // const j = execSync(execPath.value);
+
+      let cmd = `G:/bin/exiv2.exe ${exifCLI} ${path.join(imagesdir.value, imagename)}`;
+      console.log(cmd);
+      // execSync(cmd);
+    }
+
     const doExif = () => {
       const csvRows = csvContentParsed.value;
       // console.log(csvRows);
@@ -193,7 +245,7 @@ export default defineComponent({
       let lonIndex = 1;
       let latIndex = 2;
       let altIndex = 3;
-      if(hasHeader){
+      if(hasHeader.value){
         let headerRow = csvRows[0];
         // console.log(headerRow);
 
@@ -215,10 +267,17 @@ export default defineComponent({
         let altitude = csvRows[i][altIndex];
 
         console.log(imagename, longitude, latitude, altitude);
+        modifyExif(imagename, longitude, latitude, altitude);
+        
       }
     }
 
     const startexifing = () => {
+      if(imagesdir.value == ''){
+        showTempMsg('Select Images Directory', 2);
+        return;
+      }
+
       statusmsg.value = 'Started';
       // exifing.value = true;
 

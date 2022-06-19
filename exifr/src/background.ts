@@ -1,9 +1,11 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, dialog, ipcMain } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
-import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
-const isDevelopment = process.env.NODE_ENV !== 'production'
+import { app, protocol, BrowserWindow, dialog, ipcMain } from 'electron';
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib';
+import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer';
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+import path from 'path';
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -107,6 +109,14 @@ ipcMain.on('open-file', (evt, arg) => {
       evt.sender.send(arg[1], res.filePaths[0]);
     }
   });  
+});
+
+ipcMain.on('binary-path', (evt, arg) => {
+  const binaryPath = !isDevelopment && app.isPackaged
+    ? path.join(path.dirname(app.getAppPath()), './bin')
+    : path.join(process.cwd(), './resources', './bin');
+
+  evt.sender.send('binary-path', binaryPath);
 });
 
 ipcMain.on('exit-now', (evt, arg) => {
