@@ -15,10 +15,8 @@
     <table style="margin: auto;">
       <tr>
         <td>
-          <button class="inputbtn" v-on:click="selectoutdir">Select Output Folder</button>
-          <div>{{ outdir }}</div>
+          <span>Has Header</span>&emsp;<input type="checkbox" v-model="hasHeader" v-bind:disabled="!csvLoaded">
         </td>
-        <td><span>Has Header</span><br><input type="checkbox" v-model="hasHeader"></td>
       </tr>
     </table>
     <br>
@@ -45,7 +43,7 @@
         <td>
           <span>Longitude</span>
         </td><td>
-          <select v-model="imgname">
+          <select v-model="longitudecolumn">
             <option disabled value="">Select Column</option>
             <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
           </select>
@@ -53,7 +51,7 @@
         <td>
           <span>Altitude</span>
         </td><td>
-          <select v-model="latitudecolumn">
+          <select v-model="altitudeecolumn">
             <option disabled value="">Select Column</option>
             <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
           </select>
@@ -81,10 +79,9 @@ export default defineComponent({
   setup() {
     const imagesdir = ref('X://folder');
     const csvpath = ref('X://folder/csvfile');
-    const outdir = ref('Y://folde21');
 
-    const csvLoaded = ref(false);
-    const hasHeader = ref(true);
+    const csvLoaded = ref(true);
+    const hasHeader = ref(false);
 
     const imgnamecolumn = ref();
     const latitudecolumn = ref();
@@ -118,16 +115,12 @@ export default defineComponent({
       csvpath.value = arg;
     });
 
-    ipcRenderer.on('outputfolder', (event, arg) => {
-      outdir.value = arg;
-    });
-
     const startexifing = () => {
       console.log('yes started');
     }
 
     return {
-      imagesdir, csvpath, outdir,
+      imagesdir, csvpath,
       selectimagesdir, selectcsvfile, selectoutdir,
       ...csvParams,
       startexifing
