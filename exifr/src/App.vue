@@ -22,12 +22,12 @@
       </tr>
     </table>
     <br>
-    <table style="margin: auto;">
+    <table style="margin: auto;" v-show="csvLoaded">
       <tr>
         <td>
           <span>Image Name</span>
         </td><td>
-          <select v-model="imgname">
+          <select v-model="imgnamecolumn">
             <option disabled value="">Select Column</option>
             <option v-for="(col, index) in columnList" v-bind:key="index">{{ col }}</option>
           </select>
@@ -66,7 +66,7 @@
     </div>
     <br>
     <button class="cmdbtn" v-on:click="startexifing">Start EXIFR</button>
-    <button class="cmdbtn" v-on:click="startexifing">Exit</button>
+    <button class="cmdbtn" v-on:click="exitnow">Exit</button>
   </div>
 </template>
 
@@ -83,6 +83,7 @@ export default defineComponent({
     const csvpath = ref('X://folder/csvfile');
     const outdir = ref('Y://folde21');
 
+    const csvLoaded = ref(false);
     const hasHeader = ref(true);
 
     const imgnamecolumn = ref();
@@ -93,7 +94,7 @@ export default defineComponent({
     const columnList = ref(['col1', 'col2', 'col3']);
 
     const csvParams = {
-      hasHeader, 
+      hasHeader, csvLoaded,
       imgnamecolumn, latitudecolumn, longitudecolumn, altitudeecolumn, columnList
     };
 
