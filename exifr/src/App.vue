@@ -237,8 +237,10 @@ export default defineComponent({
 
       let cmd = `${execPath.value} ${exifCLI} ${path.join(imagesdir.value, imagename)}`;
       // console.log(cmd);
-      execSync(cmd);
-      geoimages.value = geoimages.value + 1;
+      try {
+        execSync(cmd);
+        geoimages.value = geoimages.value + 1;
+      } catch (e) {}
     }
 
     const doExif = () => {
