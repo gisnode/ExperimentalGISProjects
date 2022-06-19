@@ -1,4 +1,4 @@
-<template>
+.<template>
   <div id="approot">
     <div class="title">GPS EXIFR</div>
     <table style="margin: auto;">
@@ -59,6 +59,7 @@
     </table>
     
     <br>
+    <div class="clientmsg">Images Total: {{ totalimages }} &emsp; Geotagged: {{ geoimages }}</div>
     <div class="clientmsg">{{ statusmsg }}</div>
     <button class="cmdbtn" v-on:click="startexifing" v-bind:disabled="exifing">XIF GPS</button>
     <button class="cmdbtn" v-on:click="exitnow">Exit</button>
@@ -82,6 +83,9 @@ export default defineComponent({
   setup() {
     const imagesdir = ref('');
     const csvpath = ref('');
+
+    const totalimages = ref(0);
+    const geoimages = ref(0);
 
     const imagesdirdisplay = ref('X://folder');
     const csvpathdisplay = ref('Y://file.csv');
@@ -142,6 +146,8 @@ export default defineComponent({
 
     ipcRenderer.on('imagesfolder', (event, arg) => {
       imagesdir.value = arg;
+
+      totalimages.value = fs.readdirSync(arg).length;
       
       let foldername = path.basename(arg);
       imagesdirdisplay.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
@@ -193,7 +199,7 @@ export default defineComponent({
     const execPath = ref('');
 
     ipcRenderer.on('binary-path', (event, arg) => {
-      console.log(arg);
+      // console.log(arg);
       execPath.value = path.resolve(path.join(arg, './exiv2.exe'));
     });
 
@@ -229,11 +235,10 @@ export default defineComponent({
 
       let exifCLI = exifArray.join(' ');
 
-      // const j = execSync(execPath.value);
-
-      let cmd = `G:/bin/exiv2.exe ${exifCLI} ${path.join(imagesdir.value, imagename)}`;
-      console.log(cmd);
-      // execSync(cmd);
+      let cmd = `${execPath.value} ${exifCLI} ${path.join(imagesdir.value, imagename)}`;
+      // console.log(cmd);
+      execSync(cmd);
+      geoimages.value = geoimages.value + 1;
     }
 
     const doExif = () => {
@@ -260,16 +265,17 @@ export default defineComponent({
         altIndex = parseInt(altitudeecolumn.value) - 1;
       }
 
-      for(let i = startIndex; i < 5; i++){
+      for(let i = startIndex; i < csvRows.length; i++){
         let imagename = csvRows[i][imgIndex];
         let longitude = csvRows[i][lonIndex];
         let latitude = csvRows[i][latIndex];
         let altitude = csvRows[i][altIndex];
 
-        console.log(imagename, longitude, latitude, altitude);
+        // console.log(imagename, longitude, latitude, altitude);
         modifyExif(imagename, longitude, latitude, altitude);
-        
       }
+
+      statusmsg.value = 'Completed';
     }
 
     const startexifing = () => {
@@ -291,7 +297,7 @@ export default defineComponent({
     }
 
     return {
-      statusmsg, imagesdirdisplay, csvpathdisplay,
+      statusmsg, imagesdirdisplay, csvpathdisplay, totalimages, geoimages,
       selectimagesdir, selectcsvfile,
       ...csvParams,
       startexifing, exitnow, exifing
