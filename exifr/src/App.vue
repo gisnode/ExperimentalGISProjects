@@ -19,7 +19,6 @@
         </td>
       </tr>
     </table>
-    <br>
     <table style="margin: auto;" v-show="csvLoaded">
       <tr>
         <td>
@@ -59,6 +58,7 @@
       </tr>
     </table>
     
+    <br>
     <div class="clientmsg">{{ statusmsg }}</div>
     <button class="cmdbtn" v-on:click="startexifing">XIF GPS</button>
     <button class="cmdbtn" v-on:click="exitnow">Exit</button>
@@ -89,7 +89,7 @@ export default defineComponent({
     const longitudecolumn = ref();
     const altitudeecolumn = ref();
 
-    const columnList = ref(['col1', 'col2', 'col3']);
+    const columnList = ref(['1', '2', '3', '4']);
 
     const csvParams = {
       hasHeader, csvLoaded,
@@ -112,16 +112,30 @@ export default defineComponent({
     }
 
     ipcRenderer.on('imagesfolder', (event, arg) => {
-      imagesdir.value = arg;
+      let foldername = path.basename(path.dirname(arg));
+      imagesdir.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
     });
 
     ipcRenderer.on('csvfile', (event, arg) => {
       if(path.extname(arg) == '.csv'){
-        csvpath.value = path.basename(arg);
+        let filename = path.basename(arg, '.csv');
+        csvpath.value = filename.length < 10 ? filename + '.csv' : filename.substring(0, 10) + '.. .csv';
+
+        csvActions();
       } else {
         showTempMsg('Only CSVs', 2);
       }
     });
+
+    const csvActions = () => {
+      csvLoaded.value = true;
+      hasHeader.value = false;
+
+      imgnamecolumn.value = '1';
+      latitudecolumn.value = '2';
+      longitudecolumn.value = '3';
+      altitudeecolumn.value = '4';
+    }
 
     const startexifing = () => {
       console.log('yes started');
