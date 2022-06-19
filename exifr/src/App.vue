@@ -287,6 +287,7 @@ export default defineComponent({
       }
 
       statusmsg.value = 'Completed';
+      exifing.value = false;
     }
 
     const startexifing = () => {
@@ -296,7 +297,7 @@ export default defineComponent({
       }
 
       statusmsg.value = 'Started';
-      // exifing.value = true;
+      exifing.value = true;
 
       setTimeout(() => {
         doExif();
