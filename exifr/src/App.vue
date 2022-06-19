@@ -187,13 +187,26 @@ export default defineComponent({
     const doExif = () => {
       const csvRows = csvContentParsed.value;
       // console.log(csvRows);
-
-      let imgIndex = parseInt(imgnamecolumn.value) - 1;
-      let lonIndex = parseInt(longitudecolumn.value) - 1;
-      let latIndex = parseInt(latitudecolumn.value) - 1;
-      let altIndex = parseInt(altitudeecolumn.value) - 1;
-
       let startIndex = hasHeader.value ? 1 : 0;
+
+      let imgIndex = 0;
+      let lonIndex = 1;
+      let latIndex = 2;
+      let altIndex = 3;
+      if(hasHeader){
+        let headerRow = csvRows[0];
+        // console.log(headerRow);
+
+        imgIndex = headerRow.findIndex((x: any) => x == imgnamecolumn.value);
+        lonIndex = headerRow.findIndex((x: any) => x == longitudecolumn.value);
+        latIndex = headerRow.findIndex((x: any) => x == latitudecolumn.value);
+        altIndex = headerRow.findIndex((x: any) => x == altitudeecolumn.value);
+      } else {
+        imgIndex = parseInt(imgnamecolumn.value) - 1;
+        lonIndex = parseInt(longitudecolumn.value) - 1;
+        latIndex = parseInt(latitudecolumn.value) - 1;
+        altIndex = parseInt(altitudeecolumn.value) - 1;
+      }
 
       for(let i = startIndex; i < 5; i++){
         let imagename = csvRows[i][imgIndex];
