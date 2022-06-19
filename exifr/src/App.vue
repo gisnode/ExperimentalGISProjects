@@ -220,29 +220,7 @@ export default defineComponent({
       return `${deg}/1 ${min}/1 ${sec}/${10 ** secDigits}`;
     }
 
-    const modifyExif = (imagename: any, longitude: any, latitude: any, altitude: any) => {
-      let exifArray: any = [];
-      exifArray.push('-M"set Exif.GPSInfo.GPSVersionID 2 3 0 0"');
-      exifArray.push('-M"set Exif.GPSInfo.GPSLatitudeRef N"');
-      exifArray.push(`-M"set Exif.GPSInfo.GPSLatitude ${degToDmsRational(latitude)}"`);
-      exifArray.push('-M"set Exif.GPSInfo.GPSLongitudeRef E"');
-      exifArray.push(`-M"set Exif.GPSInfo.GPSLongitude ${degToDmsRational(longitude)}"`);
-      exifArray.push('-M"set Exif.GPSInfo.GPSAltitudeRef 0"');
-      exifArray.push(`-M"set Exif.GPSInfo.GPSAltitude ${Math.round(altitude * 1000)}/1000"`);
-      exifArray.push('-M"set Exif.GPSInfo.GPSStatus V"');
-      exifArray.push('-M"set Exif.GPSInfo.GPSMapDatum WGS-84"');
-      exifArray.push('-M"set Exif.GPSInfo.GPSDifferential 0"');
-
-      let exifCLI = exifArray.join(' ');
-
-      let cmd = `${execPath.value} ${exifCLI} ${path.join(imagesdir.value, imagename)}`;
-      // console.log(cmd);
-      try {
-        execSync(cmd);
-        geoimages.value = geoimages.value + 1;
-      } catch (e) {}
-    }
-
+    let mappedObjects: any = {};
     const doExif = () => {
       const csvRows = csvContentParsed.value;
       // console.log(csvRows);
@@ -274,7 +252,38 @@ export default defineComponent({
         let altitude = csvRows[i][altIndex];
 
         // console.log(imagename, longitude, latitude, altitude);
-        modifyExif(imagename, longitude, latitude, altitude);
+        let exifArray: any = [];
+        exifArray.push('-M"set Exif.GPSInfo.GPSVersionID 2 3 0 0"');
+        exifArray.push('-M"set Exif.GPSInfo.GPSLatitudeRef N"');
+        exifArray.push(`-M"set Exif.GPSInfo.GPSLatitude ${degToDmsRational(latitude)}"`);
+        exifArray.push('-M"set Exif.GPSInfo.GPSLongitudeRef E"');
+        exifArray.push(`-M"set Exif.GPSInfo.GPSLongitude ${degToDmsRational(longitude)}"`);
+        exifArray.push('-M"set Exif.GPSInfo.GPSAltitudeRef 0"');
+        exifArray.push(`-M"set Exif.GPSInfo.GPSAltitude ${Math.round(altitude * 1000)}/1000"`);
+        exifArray.push('-M"set Exif.GPSInfo.GPSStatus V"');
+        exifArray.push('-M"set Exif.GPSInfo.GPSMapDatum WGS-84"');
+        exifArray.push('-M"set Exif.GPSInfo.GPSDifferential 0"');
+
+        // console.log(exifArray);
+        mappedObjects[imagename] = exifArray.join(' ');
+        // modifyExif(imagename, longitude, latitude, altitude);
+      }
+
+      const files = fs.readdirSync(imagesdir.value);
+      const jpgimgs = files.filter(img => {
+          return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
+      });
+
+      for (let i = 0; i < jpgimgs.length; i++){
+        // console.log(jpgimgs[i]);
+        // console.log(mappedObjects[jpgimgs[i]]);
+
+        let cmd = `${execPath.value} ${mappedObjects[jpgimgs[i]]} ${path.join(imagesdir.value, jpgimgs[i])}`;
+        console.log(cmd);
+        try {
+          // execSync(cmd);
+          geoimages.value = geoimages.value + 1;
+        } catch (e) {}
       }
 
       statusmsg.value = 'Completed';
