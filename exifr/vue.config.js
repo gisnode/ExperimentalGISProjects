@@ -6,10 +6,7 @@ module.exports = defineConfig({
         builderOptions: {
             win: {
                 icon: 'src/assets/icon.png'
-            }
-        },
-        nodeIntegration: true,
-        builderOptions: {
+            },
             extraResources: [
               {
                 "from": "resources/bin",
@@ -19,7 +16,8 @@ module.exports = defineConfig({
                 ]
               }
             ]
-        }
+        },
+        nodeIntegration: true
     }
 }
 })
