@@ -281,7 +281,7 @@ export default defineComponent({
         let cmd = `${execPath.value} ${mappedObjects[jpgimgs[i]]} ${path.join(imagesdir.value, jpgimgs[i])}`;
         console.log(cmd);
         try {
-          // execSync(cmd);
+          execSync(cmd);
           geoimages.value = geoimages.value + 1;
         } catch (e) {}
       }
