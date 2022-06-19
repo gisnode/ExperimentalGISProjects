@@ -1,6 +1,6 @@
 <template>
   <div id="approot">
-    <div class="title">EXIFR</div>
+    <div class="title">GPS EXIFR</div>
     <table style="margin: auto;">
       <tr>
         <td><button class="inputbtn" v-on:click="selectimagesdir">Select Images Folder</button></td>
@@ -12,7 +12,7 @@
       </tr>
     </table>
 
-    <table style="margin: auto;">
+    <table style="margin: auto;" v-show="csvLoaded">
       <tr>
         <td>
           <span>Has Header</span>&emsp;<input type="checkbox" v-model="hasHeader" v-bind:disabled="!csvLoaded">
@@ -59,11 +59,8 @@
       </tr>
     </table>
     
-    <div class="clientmsg">
-      
-    </div>
-    <br>
-    <button class="cmdbtn" v-on:click="startexifing">Start EXIFR</button>
+    <div class="clientmsg">{{ statusmsg }}</div>
+    <button class="cmdbtn" v-on:click="startexifing">XIF GPS</button>
     <button class="cmdbtn" v-on:click="exitnow">Exit</button>
   </div>
 </template>
@@ -74,13 +71,17 @@ import { ref } from '@vue/reactivity';
 import './App.scss';
 
 import { ipcRenderer } from 'electron';
+import path from 'path';
 
 export default defineComponent({
   setup() {
     const imagesdir = ref('X://folder');
-    const csvpath = ref('X://folder/csvfile');
+    const csvpath = ref('Y://file.csv');
 
-    const csvLoaded = ref(true);
+    const defaultMsg = 'Click XIF to Start';
+    const statusmsg = ref(defaultMsg);
+
+    const csvLoaded = ref(false);
     const hasHeader = ref(false);
 
     const imgnamecolumn = ref();
@@ -103,8 +104,11 @@ export default defineComponent({
       ipcRenderer.send('open-file', ['Select CSV File', 'csvfile']);
     }
 
-    const selectoutdir = () => {
-      ipcRenderer.send('open-folder', ['Select Output Folder', 'outputfolder']);
+    const showTempMsg = (msg: any, seconds: any) => {
+      statusmsg.value = msg;
+      setTimeout(() => {
+        statusmsg.value = defaultMsg;
+      }, seconds * 1000);
     }
 
     ipcRenderer.on('imagesfolder', (event, arg) => {
@@ -112,16 +116,21 @@ export default defineComponent({
     });
 
     ipcRenderer.on('csvfile', (event, arg) => {
-      csvpath.value = arg;
+      if(path.extname(arg) == '.csv'){
+        csvpath.value = path.basename(arg);
+      } else {
+        showTempMsg('Only CSVs', 2);
+      }
     });
 
     const startexifing = () => {
       console.log('yes started');
+
     }
 
     return {
-      imagesdir, csvpath,
-      selectimagesdir, selectcsvfile, selectoutdir,
+      statusmsg, imagesdir, csvpath,
+      selectimagesdir, selectcsvfile,
       ...csvParams,
       startexifing
     }
