@@ -95,14 +95,24 @@ export default defineComponent({
     const longitudecolumn = ref();
     const altitudeecolumn = ref();
 
+    const csvContentParse = ref();
+
+    const resetColumns = () => {
+      imgnamecolumn.value = '';
+      latitudecolumn.value = '';
+      longitudecolumn.value = '';
+      altitudeecolumn.value = '';
+    }
+
     // const columnList = ref(['1', '2', '3', '4']);
     const columnList = computed(() => {
-      setSomeColumns();
-
       if (hasHeader.value){
-        return ['4', '3', '2', '1']
+        resetColumns();
+
+        return csvContentParse.value[0];
       } else {
-        return ['1', '2', '3', '4']
+        setNumericColumns();
+        return ['1', '2', '3', '4'];
       }
     });
 
@@ -144,8 +154,6 @@ export default defineComponent({
       }
     });
 
-    const csvContentParse = ref();
-
     const readCSVNLoad = () => {
       const csvContent = fs.readFileSync(csvpath.value, 'utf-8');
       // console.log(csvContent);
@@ -158,7 +166,7 @@ export default defineComponent({
       csvContentParse.value = csvParsed;
     }
 
-    const setSomeColumns = () => {
+    const setNumericColumns = () => {
       imgnamecolumn.value = '1';
       latitudecolumn.value = '2';
       longitudecolumn.value = '3';
@@ -171,7 +179,7 @@ export default defineComponent({
       hasHeader.value = false;
 
       readCSVNLoad();
-      setSomeColumns();
+      setNumericColumns();
     }
 
     const startexifing = () => {
