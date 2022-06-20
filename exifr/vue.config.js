@@ -9,8 +9,15 @@ module.exports = defineConfig({
             },
             extraResources: [
               {
-                "from": "resources/bin",
+                "from": "src/resources/bin",
                 "to": "bin",
+                "filter": [
+                  "**/*"
+                ]
+              },
+              {
+                "from": "src/resources/fonts",
+                "to": "fonts",
                 "filter": [
                   "**/*"
                 ]
