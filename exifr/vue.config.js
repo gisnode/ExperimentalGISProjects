@@ -14,13 +14,6 @@ module.exports = defineConfig({
                 "filter": [
                   "**/*"
                 ]
-              },
-              {
-                "from": "src/resources/fonts",
-                "to": "fonts",
-                "filter": [
-                  "**/*"
-                ]
               }
             ]
         },
