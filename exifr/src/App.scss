@@ -41,9 +41,8 @@ body {
     text-shadow: 4px 4px rgba(255, 0, 0, 0.2);
 }
 
-.inputbtn {
+.imgsbtn, .csvbtn {
     padding: 10px;
-    background-color: rgba(207, 148, 38, 0.726);
 
     margin: 10px;
     border: none;
@@ -60,9 +59,16 @@ body {
     }
 }
 
-.cmdbtn {
+.imgsbtn {
+    background-color: rgba(207, 148, 38, 0.726);
+}
+
+.csvbtn {
+    background-color: rgba(121, 147, 17, 0.726);
+}
+
+.xifbtn, .xitbtn {
     padding: 10px;
-    background-color: rgba(207, 77, 38, 0.726);
 
     margin: 10px;
     border: none;
@@ -76,6 +82,14 @@ body {
     &:disabled {
         background-color: rgba(69, 65, 70, 0.486);
     }
+}
+
+.xifbtn {
+    background-color: rgba(38, 86, 207, 0.726);
+}
+
+.xitbtn {
+    background-color: rgba(213, 40, 40, 0.726);
 }
 
 .clientmsg {

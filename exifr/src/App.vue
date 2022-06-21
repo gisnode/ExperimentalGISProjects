@@ -1,14 +1,34 @@
 .<template>
   <div id="approot">
-    <div class="title">GPS EXIFR</div>
+    <div class="title">GPS EXIFR</div><br>
+    <div class="actions">
+      <input type="radio" value="0" v-model="action" >
+      <label>Remove</label>
+
+      <input type="radio" value="1" v-model="action" checked>
+      <label>Add / Set</label>
+
+      <input type="radio" value="2" v-model="action" >
+      <label>Export</label>
+    </div>
+
     <table style="margin: auto;">
       <tr>
-        <td><button class="inputbtn" v-on:click="selectimagesdir" v-bind:disabled="exifing">Select Images Folder</button></td>
-        <td><button class="inputbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">Select CSV File</button></td>
+        <td><button class="imgsbtn" v-on:click="selectimagesdir" v-bind:disabled="exifing">Select Images Folder</button></td>
+        <td>
+          <span>{{ imagesdirdisplay }}</span><br>
+          <span class="clientmsg">Images Total: {{ totalimages }}</span>
+        </td>
       </tr>
+    </table>
+
+    <table style="margin: auto;" v-show="action == '1'">
       <tr>
-        <td><span>{{ imagesdirdisplay }}</span></td>
-        <td><span>{{ csvpathdisplay }}</span></td>
+        <td><button class="csvbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">Select CSV File</button></td>
+        <td>
+          <span>{{ csvpathdisplay }}</span><br>
+          <span class="clientmsg">GeoInfo: {{ totalimages }}</span>
+        </td>
       </tr>
     </table>
 
@@ -58,11 +78,10 @@
       </tr>
     </table>
     
-    <br>
-    <div class="clientmsg">Images Total: {{ totalimages }} &emsp; Geotagged: {{ geoimages }}</div>
+    <div class="clientmsg"> Images Modified: {{ geoimages }}</div>
     <div class="clientmsg">{{ statusmsg }}</div>
-    <button class="cmdbtn" v-on:click="startexifing" v-bind:disabled="exifing">XIF GPS</button>
-    <button class="cmdbtn" v-on:click="exitnow">Exit</button>
+    <button class="xifbtn" v-on:click="startexifing" v-bind:disabled="exifing">XIF</button>
+    <button class="xitbtn" v-on:click="exitnow">Exit</button>
   </div>
 </template>
 
@@ -81,6 +100,8 @@ import { execSync } from 'child_process';
 
 export default defineComponent({
   setup() {
+    const action = ref();
+
     const imagesdir = ref('');
     const csvpath = ref('');
 
@@ -221,7 +242,7 @@ export default defineComponent({
     }
 
     let mappedObjects: any = {};
-    const doExif = () => {
+    const addGPSExif = () => {
       const csvRows = csvContentParsed.value;
       // console.log(csvRows);
       let startIndex = hasHeader.value ? 1 : 0;
@@ -290,6 +311,10 @@ export default defineComponent({
       exifing.value = false;
     }
 
+    const removeGPSExif = () => {
+      
+    }
+
     const startexifing = () => {
       if(imagesdir.value == ''){
         showTempMsg('Select Images Directory', 2);
@@ -300,7 +325,12 @@ export default defineComponent({
       exifing.value = true;
 
       setTimeout(() => {
-        doExif();
+        if(action.value == '0'){
+          removeGPSExif();
+        }
+        else if(action.value == '1'){
+          addGPSExif();
+        }
       }, 500);
     }
 
@@ -309,6 +339,7 @@ export default defineComponent({
     }
 
     return {
+      action,
       statusmsg, imagesdirdisplay, csvpathdisplay, totalimages, geoimages,
       selectimagesdir, selectcsvfile,
       ...csvParams,

@@ -15,8 +15,10 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    width: 500,
-    height: 500,
+    // width: 500,
+    // height: 500,
+    width: 800,
+    height: 600,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -114,7 +116,7 @@ ipcMain.on('open-file', (evt, arg) => {
 ipcMain.on('binary-path', (evt, arg) => {
   const binaryPath = !isDevelopment && app.isPackaged
     ? path.join(path.dirname(app.getAppPath()), './bin')
-    : path.join(process.cwd(), './resources', './bin');
+    : path.join(process.cwd(), './src', './resources', './bin');
 
   evt.sender.send('binary-path', binaryPath);
 });
