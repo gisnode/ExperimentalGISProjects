@@ -333,17 +333,26 @@ export default defineComponent({
           return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
       });
 
+      let missedImages = [];
       for (let i = 0; i < jpgimgs.length; i++){
         // console.log(jpgimgs[i]);
         // console.log(mappedObjects[jpgimgs[i]]);
 
-        let cmd = `${execPath.value} ${mappedObjects[jpgimgs[i]]} ${path.join(imagesdir.value, jpgimgs[i])}`;
-        console.log(cmd);
-        try {
-          execSync(cmd);
-          modimages.value = modimages.value + 1;
-        } catch (e) {}
+        let exifCLI = mappedObjects[jpgimgs[i]];
+        if(exifCLI != undefined){
+          let cmd = `${execPath.value} ${exifCLI} ${path.join(imagesdir.value, jpgimgs[i])}`;
+          // console.log(cmd);
+          try {
+            execSync(cmd);
+            modimages.value = modimages.value + 1;
+          } catch (e) {}
+        } else {
+          missedImages.push(jpgimgs[i]);
+        }
       }
+
+      let missedTxt = missedImages.join('\n');
+      fs.writeFileSync(path.join(imagesdir.value, 'AddGeoInfoMissedImgs.txt'), missedTxt);
 
       statusmsg.value = 'Completed';
       exifing.value = false;
@@ -368,16 +377,16 @@ export default defineComponent({
       exifArray.push('-M"del Exif.GPSInfo.GPSDifferential"');
 
       // console.log(exifArray);
-      let cliExif = exifArray.join(' ');
+      let exifCLI = exifArray.join(' ');
 
       for (let i = 0; i < jpgimgs.length; i++){
-        let cmd = `${execPath.value} ${cliExif} ${path.join(imagesdir.value, jpgimgs[i])}`;
-        console.log(cmd);
+        let cmd = `${execPath.value} ${exifCLI} ${path.join(imagesdir.value, jpgimgs[i])}`;
+        // console.log(cmd);
         try {
           execSync(cmd);
           modimages.value = modimages.value + 1;
         } catch (e: any) {
-          console.log(e.toString());
+          // console.log(e.toString());
         }
       }
 
