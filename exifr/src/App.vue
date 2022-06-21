@@ -32,14 +32,14 @@
       </tr>
     </table>
 
-    <table style="margin: auto;" v-show="csvLoaded">
+    <table style="margin: auto;" v-show="action == '1' && csvLoaded">
       <tr>
         <td>
           <span>Has Header</span>&emsp;<input type="checkbox" v-model="hasHeader" v-bind:disabled="!csvLoaded">
         </td>
       </tr>
     </table>
-    <table style="margin: auto;" v-show="csvLoaded">
+    <table style="margin: auto;" v-show="action == '1' && csvLoaded">
       <tr>
         <td>
           <span>Image Name</span>
@@ -206,7 +206,6 @@ export default defineComponent({
     }
 
     watch(() => imgnamecolumn.value, (newval: any, oldval: any) => {
-      geoinfo.value = 0;
       computeGeoInfo();
       // console.log(newval, oldval);
     });
@@ -246,6 +245,7 @@ export default defineComponent({
       csvLoaded.value = true;
       hasHeader.value = false;
 
+      geoinfo.value = 0;
       readCSVNLoad();
       setNumericColumns();
       computeGeoInfo();
@@ -340,7 +340,7 @@ export default defineComponent({
 
         let exifCLI = mappedObjects[jpgimgs[i]];
         if(exifCLI != undefined){
-          let cmd = `${execPath.value} ${exifCLI} ${path.join(imagesdir.value, jpgimgs[i])}`;
+          let cmd = `"${execPath.value}" ${exifCLI} "${path.join(imagesdir.value, jpgimgs[i])}"`;
           // console.log(cmd);
           try {
             execSync(cmd);
@@ -380,11 +380,54 @@ export default defineComponent({
       let exifCLI = exifArray.join(' ');
 
       for (let i = 0; i < jpgimgs.length; i++){
-        let cmd = `${execPath.value} ${exifCLI} ${path.join(imagesdir.value, jpgimgs[i])}`;
+        let cmd = `"${execPath.value}" ${exifCLI} "${path.join(imagesdir.value, jpgimgs[i])}"`;
         // console.log(cmd);
         try {
           execSync(cmd);
           modimages.value = modimages.value + 1;
+        } catch (e: any) {
+          // console.log(e.toString());
+        }
+      }
+
+      statusmsg.value = 'Completed';
+      exifing.value = false;
+    }
+
+    const exportGPSExif = () => {
+      const files = fs.readdirSync(imagesdir.value);
+      const jpgimgs = files.filter(img => {
+          return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
+      });
+
+      for (let i = 0; i < jpgimgs.length; i++){
+        let cmdLon = `"${execPath.value}" -K Exif.GPSInfo.GPSLongitude -Pv "${path.join(imagesdir.value, jpgimgs[i])}"`;
+        let cmdLat = `"${execPath.value}" -K Exif.GPSInfo.GPSLatitude -Pv "${path.join(imagesdir.value, jpgimgs[i])}"`;
+        let cmdAlt = `"${execPath.value}" -K Exif.GPSInfo.GPSAltitude -Pv "${path.join(imagesdir.value, jpgimgs[i])}"`;
+        // console.log(cmd);
+        try {
+          const gpsLonParts = execSync(cmdLon).toString().replace(/\s\s+/g, ' ').trim().split(' ');
+          let gpsLonD = parseInt(gpsLonParts[0].split('/')[0]) / parseInt(gpsLonParts[0].split('/')[1]);
+          let gpsLonM = parseInt(gpsLonParts[1].split('/')[0]) / parseInt(gpsLonParts[1].split('/')[1]);
+          let gpsLonS = parseInt(gpsLonParts[2].split('/')[0]) / parseInt(gpsLonParts[2].split('/')[1]);
+          let gpsLon = gpsLonD + gpsLonM / 60 + gpsLonS / 3600;
+          console.log(gpsLonParts, gpsLonD, gpsLonM, gpsLonS);
+
+          const gpsLatParts = execSync(cmdLat).toString().replace(/\s\s+/g, ' ').trim().split(' ');
+          let gpsLatD = parseInt(gpsLatParts[0].split('/')[0]) / parseInt(gpsLatParts[0].split('/')[1]);
+          let gpsLatM = parseInt(gpsLatParts[1].split('/')[0]) / parseInt(gpsLatParts[1].split('/')[1]);
+          let gpsLatS = parseInt(gpsLatParts[2].split('/')[0]) / parseInt(gpsLatParts[2].split('/')[1]);
+          let gpsLat = gpsLatD + gpsLatM / 60 + gpsLatS / 3600;
+          console.log(gpsLatParts, gpsLatD, gpsLatM, gpsLatS);
+
+          const gpsAltParts = execSync(cmdAlt).toString().trim().split('/');
+          let gpsAlt = parseInt(gpsAltParts[0]) / parseInt(gpsAltParts[1]);
+          console.log(gpsAltParts);
+          
+          console.log(jpgimgs[i], gpsLon, gpsLat, gpsAlt);
+
+          
+          
         } catch (e: any) {
           // console.log(e.toString());
         }
@@ -408,9 +451,10 @@ export default defineComponent({
       setTimeout(() => {
         if(action.value == '0'){
           removeGPSExif();
-        }
-        else if(action.value == '1'){
+        } else if(action.value == '1'){
           addGPSExif();
+        } else if(action.value == '2'){
+          exportGPSExif();
         }
       }, 500);
     }
