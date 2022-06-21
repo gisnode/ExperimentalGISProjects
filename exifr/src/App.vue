@@ -78,7 +78,7 @@
       </tr>
     </table>
     
-    <div class="clientmsg"> Images Modified: {{ geoimages }}</div>
+    <div class="clientmsg"> Images Modified: {{ modimages }}</div>
     <div class="clientmsg">{{ statusmsg }}</div>
     <button class="xifbtn" v-on:click="startexifing" v-bind:disabled="exifing">XIF</button>
     <button class="xitbtn" v-on:click="exitnow">Exit</button>
@@ -100,13 +100,13 @@ import { execSync } from 'child_process';
 
 export default defineComponent({
   setup() {
-    const action = ref();
+    const action = ref('1');
 
     const imagesdir = ref('');
     const csvpath = ref('');
 
     const totalimages = ref(0);
-    const geoimages = ref(0);
+    const modimages = ref(0);
 
     const imagesdirdisplay = ref('X://folder');
     const csvpathdisplay = ref('Y://file.csv');
@@ -303,7 +303,7 @@ export default defineComponent({
         console.log(cmd);
         try {
           execSync(cmd);
-          geoimages.value = geoimages.value + 1;
+          modimages.value = modimages.value + 1;
         } catch (e) {}
       }
 
@@ -312,7 +312,37 @@ export default defineComponent({
     }
 
     const removeGPSExif = () => {
-      
+      const files = fs.readdirSync(imagesdir.value);
+      const jpgimgs = files.filter(img => {
+          return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
+      });
+
+      let exifArray: any = [];
+      exifArray.push('-M"del Exif.GPSInfo.GPSVersionID');
+      exifArray.push('-M"del Exif.GPSInfo.GPSLatitudeRef');
+      exifArray.push('-M"del Exif.GPSInfo.GPSLatitude');
+      exifArray.push('-M"del Exif.GPSInfo.GPSLongitudeRef');
+      exifArray.push('-M"del Exif.GPSInfo.GPSLongitude');
+      exifArray.push('-M"del Exif.GPSInfo.GPSAltitudeRef');
+      exifArray.push('-M"del Exif.GPSInfo.GPSAltitude');
+      exifArray.push('-M"del Exif.GPSInfo.GPSStatus');
+      exifArray.push('-M"del Exif.GPSInfo.GPSMapDatum');
+      exifArray.push('-M"del Exif.GPSInfo.GPSDifferential');
+
+      // console.log(exifArray);
+      let cliExif = exifArray.join(' ');
+
+      for (let i = 0; i < jpgimgs.length; i++){
+        let cmd = `${execPath.value} ${cliExif} ${path.join(imagesdir.value, jpgimgs[i])}`;
+        console.log(cmd);
+        try {
+          execSync(cmd);
+          modimages.value = modimages.value + 1;
+        } catch (e) {}
+      }
+
+      statusmsg.value = 'Completed';
+      exifing.value = false;
     }
 
     const startexifing = () => {
@@ -340,7 +370,7 @@ export default defineComponent({
 
     return {
       action,
-      statusmsg, imagesdirdisplay, csvpathdisplay, totalimages, geoimages,
+      statusmsg, imagesdirdisplay, csvpathdisplay, totalimages, modimages,
       selectimagesdir, selectcsvfile,
       ...csvParams,
       startexifing, exitnow, exifing
