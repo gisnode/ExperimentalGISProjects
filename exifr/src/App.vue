@@ -27,7 +27,7 @@
         <td><button class="csvbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">Select CSV File</button></td>
         <td>
           <span>{{ csvpathdisplay }}</span><br>
-          <span class="clientmsg">GeoInfo: {{ totalimages }}</span>
+          <span class="clientmsg">GeoInfo: {{ geoinfo }}</span>
         </td>
       </tr>
     </table>
@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue';
+import { computed, defineComponent, onMounted, watch } from 'vue';
 import { ref } from '@vue/reactivity';
 import './App.scss';
 
@@ -107,6 +107,7 @@ export default defineComponent({
 
     const totalimages = ref(0);
     const modimages = ref(0);
+    const geoinfo = ref(0);
 
     const imagesdirdisplay = ref('X://folder');
     const csvpathdisplay = ref('Y://file.csv');
@@ -117,10 +118,10 @@ export default defineComponent({
     const csvLoaded = ref(false);
     const hasHeader = ref(false);
 
-    const imgnamecolumn = ref();
-    const longitudecolumn = ref();
-    const latitudecolumn = ref();
-    const altitudeecolumn = ref();
+    const imgnamecolumn = ref('');
+    const longitudecolumn = ref('');
+    const latitudecolumn = ref('');
+    const altitudeecolumn = ref('');
 
     const csvContentParsed = ref();
 
@@ -204,6 +205,40 @@ export default defineComponent({
       altitudeecolumn.value = '4';
     }
 
+    watch(() => imgnamecolumn.value, (newval: any, oldval: any) => {
+      computeGeoInfo();
+    });
+
+    const computeGeoInfo = () => {
+      if(imagesdir.value != '' && csvpath.value != ''){
+        const files = fs.readdirSync(imagesdir.value);
+        const jpgimgs = files.filter(img => {
+            return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
+        });
+
+        const csvRows = csvContentParsed.value;
+        // console.log(csvRows);
+        let startIndex = hasHeader.value ? 1 : 0;
+
+        let imgIndex = 0;
+        if(hasHeader.value){
+          let headerRow = csvRows[0];
+          // console.log(headerRow);
+
+          imgIndex = headerRow.findIndex((x: any) => x == imgnamecolumn.value);
+        } else {
+          imgIndex = parseInt(imgnamecolumn.value) - 1;
+        }
+
+        for(let i = startIndex; i < csvRows.length; i++){
+          let imagename = csvRows[i][imgIndex];
+          if(jpgimgs.includes(imagename)) geoinfo.value = geoinfo.value + 1;
+        }
+      } else {
+        geoinfo.value = 0;        
+      }
+    }
+
     const csvActions = (arg: any) => {
       csvpath.value = arg;
       csvLoaded.value = true;
@@ -211,6 +246,7 @@ export default defineComponent({
 
       readCSVNLoad();
       setNumericColumns();
+      computeGeoInfo();
     }
 
     const getBinaryPath = () => {
@@ -372,7 +408,7 @@ export default defineComponent({
 
     return {
       action,
-      statusmsg, imagesdirdisplay, csvpathdisplay, totalimages, modimages,
+      statusmsg, imagesdirdisplay, csvpathdisplay, totalimages, modimages, geoinfo,
       selectimagesdir, selectcsvfile,
       ...csvParams,
       startexifing, exitnow, exifing
