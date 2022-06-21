@@ -206,7 +206,9 @@ export default defineComponent({
     }
 
     watch(() => imgnamecolumn.value, (newval: any, oldval: any) => {
+      geoinfo.value = 0;
       computeGeoInfo();
+      // console.log(newval, oldval);
     });
 
     const computeGeoInfo = () => {
@@ -384,6 +386,8 @@ export default defineComponent({
     }
 
     const startexifing = () => {
+      modimages.value = 0;
+
       if(imagesdir.value == ''){
         showTempMsg('Select Images Directory', 2);
         return;
