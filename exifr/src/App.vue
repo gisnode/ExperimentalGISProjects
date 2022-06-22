@@ -95,6 +95,7 @@ import path from 'path';
 
 import { ipcRenderer } from 'electron';
 import { parse } from 'csv-parse/sync';
+import { stringify } from 'csv-stringify/sync';
 
 import { execSync } from 'child_process';
 
@@ -211,6 +212,8 @@ export default defineComponent({
     });
 
     const computeGeoInfo = () => {
+      geoinfo.value = 0;
+
       if(imagesdir.value != '' && csvpath.value != ''){
         const files = fs.readdirSync(imagesdir.value);
         const jpgimgs = files.filter(img => {
@@ -235,8 +238,6 @@ export default defineComponent({
           let imagename = csvRows[i][imgIndex];
           if(jpgimgs.includes(imagename)) geoinfo.value = geoinfo.value + 1;
         }
-      } else {
-        geoinfo.value = 0;        
       }
     }
 
@@ -245,7 +246,6 @@ export default defineComponent({
       csvLoaded.value = true;
       hasHeader.value = false;
 
-      geoinfo.value = 0;
       readCSVNLoad();
       setNumericColumns();
       computeGeoInfo();
@@ -351,8 +351,8 @@ export default defineComponent({
         }
       }
 
-      let missedTxt = missedImages.join('\n');
-      fs.writeFileSync(path.join(imagesdir.value, 'AddGeoInfoMissedImgs.txt'), missedTxt);
+      let missedTxt = missedImages.join('\r\n');
+      fs.writeFileSync(path.join(imagesdir.value, '0_ImagesMissingInCSV.txt'), missedTxt);
 
       statusmsg.value = 'Completed';
       exifing.value = false;
@@ -400,6 +400,8 @@ export default defineComponent({
           return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
       });
 
+      let csvContent = [];
+      let noGPSInfo = [];
       for (let i = 0; i < jpgimgs.length; i++){
         let cmdLon = `"${execPath.value}" -K Exif.GPSInfo.GPSLongitude -Pv "${path.join(imagesdir.value, jpgimgs[i])}"`;
         let cmdLat = `"${execPath.value}" -K Exif.GPSInfo.GPSLatitude -Pv "${path.join(imagesdir.value, jpgimgs[i])}"`;
@@ -424,14 +426,28 @@ export default defineComponent({
           let gpsAlt = parseInt(gpsAltParts[0]) / parseInt(gpsAltParts[1]);
           console.log(gpsAltParts);
           
-          console.log(jpgimgs[i], gpsLon, gpsLat, gpsAlt);
+          // console.log(jpgimgs[i], gpsLon, gpsLat, gpsAlt);
 
-          
+          csvContent.push([
+              jpgimgs[i], 
+              gpsLon, gpsLat, gpsAlt,
+              0, 0, 0,
+              0, 0, 0
+          ]);
+
+          if(gpsLon == undefined || gpsLat == undefined || gpsAlt == undefined) noGPSInfo.push(jpgimgs[i]);
           
         } catch (e: any) {
+          noGPSInfo.push(jpgimgs[i]);
           // console.log(e.toString());
         }
       }
+
+      csvContent.unshift(['image', 'lon', 'lat', 'alt', 'yaw', 'pitch', 'roll', 'omega', 'phi', 'kappa']);
+      fs.writeFileSync(path.join(imagesdir.value, '0_GeoInfo.csv'), stringify(csvContent));
+
+      let missedTxt = noGPSInfo.join('\r\n');
+      fs.writeFileSync(path.join(imagesdir.value, '0_ImagesMissingGPSInfo.txt'), missedTxt);
 
       statusmsg.value = 'Completed';
       exifing.value = false;
