@@ -16,7 +16,7 @@ async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 400,
-    height: 350,
+    height: 300,
     // width: 800,
     // height: 600,
     webPreferences: {
@@ -28,7 +28,8 @@ async function createWindow() {
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       // devTools: false
     },
-    // frame: false
+    frame: false,
+    resizable: false
   })
 
   win.setMenu(null);
