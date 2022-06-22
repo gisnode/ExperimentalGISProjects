@@ -304,6 +304,12 @@ export default defineComponent({
         altIndex = parseInt(altitudeecolumn.value) - 1;
       }
 
+      const files = fs.readdirSync(imagesdir.value);
+      const jpgimgs = files.filter(img => {
+          return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
+      });
+
+      let missingImages = [];
       for(let i = startIndex; i < csvRows.length; i++){
         let imagename = csvRows[i][imgIndex];
         let longitude = csvRows[i][lonIndex];
@@ -326,14 +332,14 @@ export default defineComponent({
         // console.log(exifArray);
         mappedObjects[imagename] = exifArray.join(' ');
         // modifyExif(imagename, longitude, latitude, altitude);
+
+        if (!jpgimgs.includes(imagename)) missingImages.push(imagename);
       }
 
-      const files = fs.readdirSync(imagesdir.value);
-      const jpgimgs = files.filter(img => {
-          return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
-      });
+      let missingImagesTxt = missingImages.join('\r\n');
+      fs.writeFileSync(path.join(imagesdir.value, '0_MissingImages.txt'), missingImagesTxt);
 
-      let missedImages = [];
+      let extraImages = [];
       for (let i = 0; i < jpgimgs.length; i++){
         // console.log(jpgimgs[i]);
         // console.log(mappedObjects[jpgimgs[i]]);
@@ -347,12 +353,12 @@ export default defineComponent({
             modimages.value = modimages.value + 1;
           } catch (e) {}
         } else {
-          missedImages.push(jpgimgs[i]);
+          extraImages.push(jpgimgs[i]);
         }
       }
 
-      let missedTxt = missedImages.join('\r\n');
-      fs.writeFileSync(path.join(imagesdir.value, '0_ImagesMissingInCSV.txt'), missedTxt);
+      let extraImagesTxt = extraImages.join('\r\n');
+      fs.writeFileSync(path.join(imagesdir.value, '0_ExtraImages.txt'), extraImagesTxt);
 
       statusmsg.value = 'Completed';
       exifing.value = false;
@@ -413,18 +419,18 @@ export default defineComponent({
           let gpsLonM = parseInt(gpsLonParts[1].split('/')[0]) / parseInt(gpsLonParts[1].split('/')[1]);
           let gpsLonS = parseInt(gpsLonParts[2].split('/')[0]) / parseInt(gpsLonParts[2].split('/')[1]);
           let gpsLon = gpsLonD + gpsLonM / 60 + gpsLonS / 3600;
-          console.log(gpsLonParts, gpsLonD, gpsLonM, gpsLonS);
+          // console.log(gpsLonParts, gpsLonD, gpsLonM, gpsLonS);
 
           const gpsLatParts = execSync(cmdLat).toString().replace(/\s\s+/g, ' ').trim().split(' ');
           let gpsLatD = parseInt(gpsLatParts[0].split('/')[0]) / parseInt(gpsLatParts[0].split('/')[1]);
           let gpsLatM = parseInt(gpsLatParts[1].split('/')[0]) / parseInt(gpsLatParts[1].split('/')[1]);
           let gpsLatS = parseInt(gpsLatParts[2].split('/')[0]) / parseInt(gpsLatParts[2].split('/')[1]);
           let gpsLat = gpsLatD + gpsLatM / 60 + gpsLatS / 3600;
-          console.log(gpsLatParts, gpsLatD, gpsLatM, gpsLatS);
+          // console.log(gpsLatParts, gpsLatD, gpsLatM, gpsLatS);
 
           const gpsAltParts = execSync(cmdAlt).toString().trim().split('/');
           let gpsAlt = parseInt(gpsAltParts[0]) / parseInt(gpsAltParts[1]);
-          console.log(gpsAltParts);
+          // console.log(gpsAltParts);
           
           // console.log(jpgimgs[i], gpsLon, gpsLat, gpsAlt);
 
@@ -447,7 +453,7 @@ export default defineComponent({
       fs.writeFileSync(path.join(imagesdir.value, '0_GeoInfo.csv'), stringify(csvContent));
 
       let missedTxt = noGPSInfo.join('\r\n');
-      fs.writeFileSync(path.join(imagesdir.value, '0_ImagesMissingGPSInfo.txt'), missedTxt);
+      fs.writeFileSync(path.join(imagesdir.value, '0_NotGeotaggedImages.txt'), missedTxt);
 
       statusmsg.value = 'Completed';
       exifing.value = false;
