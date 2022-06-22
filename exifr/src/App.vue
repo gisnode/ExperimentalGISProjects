@@ -1,6 +1,6 @@
 .<template>
   <div id="approot">
-    <div class="title">GPS EXIFR</div><br>
+    <div class="title">GNSS EXIFR</div><br>
     <div class="actions">
       <input type="radio" value="0" v-model="action" >
       <label>Remove</label>
@@ -170,7 +170,9 @@ export default defineComponent({
     ipcRenderer.on('imagesfolder', (event, arg) => {
       imagesdir.value = arg;
 
-      totalimages.value = fs.readdirSync(arg).length;
+      totalimages.value = fs.readdirSync(arg).filter(img => {
+        return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
+      }).length;
       
       let foldername = path.basename(arg);
       imagesdirdisplay.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
