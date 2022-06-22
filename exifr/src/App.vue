@@ -17,7 +17,7 @@
         <td><button class="imgsbtn" v-on:click="selectimagesdir" v-bind:disabled="exifing">Select Images Folder</button></td>
         <td>
           <span>{{ imagesdirdisplay }}</span><br>
-          <span class="clientmsg">Images Total: {{ totalimages }}</span>
+          <span class="infomsg">Images Total: {{ totalimages }}</span>
         </td>
       </tr>
     </table>
@@ -27,7 +27,7 @@
         <td><button class="csvbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">Select CSV File</button></td>
         <td>
           <span>{{ csvpathdisplay }}</span><br>
-          <span class="clientmsg">GeoInfo: {{ geoinfo }}</span>
+          <span class="infomsg">GeoInfo: {{ geoinfo }}</span>
         </td>
       </tr>
     </table>
@@ -77,9 +77,9 @@
         </td>
       </tr>
     </table>
-    
-    <div class="clientmsg" v-show="action != '2'"> Images Modified: {{ modimages }}</div>
-    <div class="clientmsg">{{ statusmsg }}</div>
+    <br>
+    <div class="infomsg" v-show="action != '2'"> Images Modified: {{ modimages }}</div>
+    <div class="actionmsg">{{ statusmsg }}</div>
     <button class="xifbtn" v-on:click="startexifing" v-bind:disabled="exifing">XIF</button>
     <button class="xitbtn" v-on:click="exitnow">Exit</button>
   </div>
@@ -466,6 +466,11 @@ export default defineComponent({
 
       if(imagesdir.value == ''){
         showTempMsg('Select Images Directory', 2);
+        return;
+      }
+
+      if(imgnamecolumn.value == '' || longitudecolumn.value == '' || latitudecolumn.value == '' || altitudeecolumn.value == ''){
+        showTempMsg('Select All Columns', 2);
         return;
       }
 

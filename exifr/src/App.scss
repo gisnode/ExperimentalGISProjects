@@ -82,7 +82,12 @@ body {
     background-color: rgba(213, 40, 40, 0.726);
 }
 
-.clientmsg {
+.infomsg {
     color: rgba(40, 65, 207, 0.596);
+    font-size: 14px;
+}
+
+.actionmsg {
+    color: rgba(207, 39, 190, 0.632);
     font-size: 14px;
 }
