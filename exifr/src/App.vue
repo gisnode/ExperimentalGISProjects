@@ -14,7 +14,7 @@
 
     <table style="margin: auto;">
       <tr>
-        <td><button class="imgsbtn" v-on:click="selectimagesdir" v-bind:disabled="exifing">Select Images Folder</button></td>
+        <td><button class="imgsbtn" v-on:click="selectimagesdir" v-bind:disabled="exifing">Images Folder</button></td>
         <td>
           <span>{{ imagesdirdisplay }}</span><br>
           <span class="infomsg">Images Total: {{ totalimages }}</span>
@@ -24,7 +24,7 @@
 
     <table style="margin: auto;" v-show="action == '1'">
       <tr>
-        <td><button class="csvbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">Select CSV File</button></td>
+        <td><button class="csvbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">CSV File</button></td>
         <td>
           <span>{{ csvpathdisplay }}</span><br>
           <span class="infomsg">GeoInfo: {{ geoinfo }}</span>
