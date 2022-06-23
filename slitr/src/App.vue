@@ -16,17 +16,10 @@
 
     <table style="margin: auto;">
       <tr>
-        <td><button class="imgsbtn" v-on:click="selectgeojsonsfolder" v-bind:disabled="sliting">GeoJSONs Folder</button></td>
+        <td><button class="imgsbtn" v-on:click="selectgeojsonsfolder">GeoJSONs Folder</button></td>
         <td>
           <span>{{ geojsons }}</span><br>
           <span class="infomsg">GeoJSONs Total: {{ totalimages }}</span>
-        </td>
-      </tr>
-      <tr>
-        <td><button class="gjbtn" v-on:click="selectgeojsonfile" v-bind:disabled="sliting">GeoJSON</button></td>
-        <td>
-          <span>{{ csvpathdisplay }}</span><br>
-          <span class="infomsg">Buffer: {{ geoinfo }}</span>
         </td>
       </tr>
       <tr>
@@ -38,9 +31,9 @@
       </tr>
     </table>
 
-    <!--- <div class="actionmsg">{{ statusmsg }}</div>
+    <div class="actionmsg">{{ statusmsg }}</div>
     <button class="slitbtn" v-on:click="startsliting" v-bind:disabled="sliting">XIF</button>
-    <button class="xitbtn" v-on:click="exitnow">Exit</button> -->
+    <button class="xitbtn" v-on:click="exitnow">Exit</button>
   </div>
 </template>
 
