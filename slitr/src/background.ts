@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, dialog, ipcMain  } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -80,3 +80,15 @@ if (isDevelopment) {
     })
   }
 }
+
+ipcMain.on('open-folder', (evt, arg) => {
+  dialog.showOpenDialog({
+    title: arg[0],
+    // defaultPath: 'D:\\',
+    properties: ['openDirectory']
+  }).then(res => {
+    if(!res.canceled){
+      evt.sender.send(arg[1], res.filePaths[0]);
+    }
+  });  
+});
