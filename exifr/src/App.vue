@@ -1,6 +1,6 @@
 .<template>
   <div id="approot">
-    <div class="title">GPS EXIFR</div><br>
+    <div class="title">GNSS EXIFR</div><br>
     <div class="actions">
       <input type="radio" value="0" v-model="action" >
       <label>Remove</label>
@@ -14,20 +14,20 @@
 
     <table style="margin: auto;">
       <tr>
-        <td><button class="imgsbtn" v-on:click="selectimagesdir" v-bind:disabled="exifing">Select Images Folder</button></td>
+        <td><button class="imgsbtn" v-on:click="selectimagesdir" v-bind:disabled="exifing">Images Folder</button></td>
         <td>
           <span>{{ imagesdirdisplay }}</span><br>
-          <span class="clientmsg">Images Total: {{ totalimages }}</span>
+          <span class="infomsg">Images Total: {{ totalimages }}</span>
         </td>
       </tr>
     </table>
 
     <table style="margin: auto;" v-show="action == '1'">
       <tr>
-        <td><button class="csvbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">Select CSV File</button></td>
+        <td><button class="csvbtn" v-on:click="selectcsvfile" v-bind:disabled="exifing">CSV File</button></td>
         <td>
           <span>{{ csvpathdisplay }}</span><br>
-          <span class="clientmsg">GeoInfo: {{ geoinfo }}</span>
+          <span class="infomsg">GeoInfo: {{ geoinfo }}</span>
         </td>
       </tr>
     </table>
@@ -77,9 +77,9 @@
         </td>
       </tr>
     </table>
-    
-    <div class="clientmsg" v-show="action != '2'"> Images Modified: {{ modimages }}</div>
-    <div class="clientmsg">{{ statusmsg }}</div>
+    <br>
+    <div class="infomsg" v-show="action != '2'"> Images Modified: {{ modimages }}</div>
+    <div class="actionmsg">{{ statusmsg }}</div>
     <button class="xifbtn" v-on:click="startexifing" v-bind:disabled="exifing">XIF</button>
     <button class="xitbtn" v-on:click="exitnow">Exit</button>
   </div>
@@ -170,7 +170,9 @@ export default defineComponent({
     ipcRenderer.on('imagesfolder', (event, arg) => {
       imagesdir.value = arg;
 
-      totalimages.value = fs.readdirSync(arg).length;
+      totalimages.value = fs.readdirSync(arg).filter(img => {
+        return path.extname(img).toLowerCase() == '.jpg' || path.extname(img).toLowerCase() == '.jpeg'
+      }).length;
       
       let foldername = path.basename(arg);
       imagesdirdisplay.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
@@ -464,6 +466,11 @@ export default defineComponent({
 
       if(imagesdir.value == ''){
         showTempMsg('Select Images Directory', 2);
+        return;
+      }
+
+      if(imgnamecolumn.value == '' || longitudecolumn.value == '' || latitudecolumn.value == '' || altitudeecolumn.value == ''){
+        showTempMsg('Select All Columns', 2);
         return;
       }
 

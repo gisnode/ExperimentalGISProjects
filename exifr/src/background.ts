@@ -15,10 +15,10 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    // width: 500,
-    // height: 500,
-    width: 800,
-    height: 600,
+    width: 400,
+    height: 300,
+    // width: 800,
+    // height: 600,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -28,7 +28,8 @@ async function createWindow() {
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       // devTools: false
     },
-    // frame: false
+    frame: false,
+    resizable: false
   })
 
   win.setMenu(null);
