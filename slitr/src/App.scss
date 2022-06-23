@@ -6,3 +6,65 @@
   color: #2c3e50;
   margin-top: 60px;
 }
+
+.title {
+  font-family: 'Lucida Calligraphy';
+  font-size: 25px;
+  text-shadow: 4px 4px rgba(255, 0, 0, 0.2);
+
+  -webkit-app-region: drag;
+}
+
+.imgsbtn, .gjbtn {
+  padding: 6px;
+
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+
+  &:active {
+      background-color: rgba(187, 38, 207, 0.486);
+  }
+
+  &:disabled {
+      background-color: rgba(69, 65, 70, 0.486);
+  }
+}
+
+.imgsbtn {
+  background-color: rgba(207, 148, 38, 0.726);
+}
+
+.gjbtn {
+  background-color: rgba(121, 147, 17, 0.726);
+}
+
+.slitbtn, .xitbtn {
+  padding: 4px;
+
+  margin: 6px;
+  border: none;
+  color: white;
+  border-radius: 2px;
+
+  &:active {
+      background-color: rgba(187, 38, 207, 0.486);
+  }
+
+  &:disabled {
+      background-color: rgba(69, 65, 70, 0.486);
+  }
+}
+
+.slitbtn {
+  background-color: rgba(38, 86, 207, 0.726);
+}
+
+.xitbtn {
+  background-color: rgba(213, 40, 40, 0.726);
+}
+
+.actionmsg {
+  color: rgba(207, 39, 190, 0.632);
+}
