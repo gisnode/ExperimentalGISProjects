@@ -47,6 +47,16 @@ import { v4 as uuidv4 } from 'uuid';
 export default defineComponent({
   setup() {
 
+    // const imagesdir = ref('');
+    // const gjpath = ref('');
+    // const totalimages = ref(0);
+    
+    // const imagesdirdisplay = ref('X://folder');
+    // const gjpathdisplay = ref('Y://file.csv');
+
+    // const defaultMsg = 'Click XIF to Start';
+    // const statusmsg = ref(defaultMsg);
+
     const sourcefolders: any = ref([
       { id: 'uuid1', path: 'D:/jack' },
       { id: 'uuid2', path: 'E:/mack' },
@@ -85,16 +95,6 @@ export default defineComponent({
 
       sourcefolders.value = filteredFoldersList;
     }
-
-    // const imagesdir = ref('');
-    // const gjpath = ref('');
-    // const totalimages = ref(0);
-    
-    // const imagesdirdisplay = ref('X://folder');
-    // const gjpathdisplay = ref('Y://file.csv');
-
-    // const defaultMsg = 'Click XIF to Start';
-    // const statusmsg = ref(defaultMsg);
 
     // const startsliting = () => {
 
