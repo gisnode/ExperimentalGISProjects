@@ -32,8 +32,8 @@
     </table>
 
     <div class="actionmsg">{{ statusmsg }}</div>
-    <button class="slitbtn" v-on:click="startsliting" v-bind:disabled="sliting">XIF</button>
-    <button class="xitbtn" v-on:click="exitnow">Exit</button>
+    <button class="slitbtn" v-on:click="startsliting">XIF</button>
+    <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
   </div>
 </template>
 
