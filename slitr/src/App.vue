@@ -13,12 +13,13 @@
         </div>
       </div>
     </div>
-    <!-- <table style="margin: auto;"> -->
-      <!-- <tr>
-        <td><button class="imgsbtn" v-on:click="selectimagesdir" v-bind:disabled="sliting">Images Folder</button></td>
+
+    <table style="margin: auto;">
+      <tr>
+        <td><button class="imgsbtn" v-on:click="selectgeojsonsfolder" v-bind:disabled="sliting">GeoJSONs Folder</button></td>
         <td>
-          <span>{{ imagesdirdisplay }}</span><br>
-          <span class="infomsg">Images Total: {{ totalimages }}</span>
+          <span>{{ geojsons }}</span><br>
+          <span class="infomsg">GeoJSONs Total: {{ totalimages }}</span>
         </td>
       </tr>
       <tr>
@@ -37,7 +38,7 @@
       </tr>
     </table>
 
-    <div class="actionmsg">{{ statusmsg }}</div>
+    <!--- <div class="actionmsg">{{ statusmsg }}</div>
     <button class="slitbtn" v-on:click="startsliting" v-bind:disabled="sliting">XIF</button>
     <button class="xitbtn" v-on:click="exitnow">Exit</button> -->
   </div>
