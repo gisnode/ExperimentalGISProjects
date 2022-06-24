@@ -361,23 +361,27 @@ export default defineComponent({
       fs.writeFileSync(path.join(imagesdir.value, '0_ExtraImages.txt'), extraImagesTxt);
 
       executeCommands(cmdCommandsToExecute);
-
-      statusmsg.value = 'Completed';
-      exifing.value = false;
     }
 
     const executeCommands = async (cmdCommandsToExecute: any) => {
       for(let i = 0; i < cmdCommandsToExecute.length; i++){
         // console.log(cmdCommandsToExecute[i]);
         await Promise.allSettled([ execCLI(cmdCommandsToExecute[i]) ]);
+
+        if((i + 1) == geoinfo.value){
+          statusmsg.value = 'Completed';
+          exifing.value = false;
+        }
       }
     }
 
     const execCLI = (cliCMD: any) => new Promise((resolve) => {
       try {
         // execSync(cmd);
-        modimages.value = modimages.value + 1;
-        exec(cliCMD, () => resolve(0));
+        exec(cliCMD, () => {
+          modimages.value = modimages.value + 1;
+          resolve(0);
+        });
       } catch (e) {}
     })
 
