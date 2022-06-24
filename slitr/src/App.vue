@@ -16,23 +16,22 @@
 
     <table style="margin: auto;">
       <tr>
-        <td><button class="imgsbtn" v-on:click="selectgeojsonsfolder">GeoJSONs Folder</button></td>
+        <td><button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder">GeoJSONs Folder</button></td>
         <td>
-          <span>{{ geojsons }}</span><br>
-          <span class="infomsg">GeoJSONs Total: {{ totalimages }}</span>
+          <span class="infomsg">{{ gjfolderdisplay }}</span><br>
+          <span class="infomsg">GeoJSONs Total: {{ totalgjs }}</span>
         </td>
       </tr>
       <tr>
-        <td><button class="imgsbtn" v-on:click="selectimagesdir" v-bind:disabled="sliting">Target Folder</button></td>
+        <td><button class="targetfldrbtn" v-on:click="selecttargetfolder" v-bind:disabled="sliting">Target Folder</button></td>
         <td>
-          <span>{{ imagesdirdisplay }}</span><br>
-          <span class="infomsg">Images Total: {{ totalimages }}</span>
+          <span class="infomsg">{{ targetfolderdisplay }}</span><br>
         </td>
       </tr>
     </table>
 
     <div class="actionmsg">{{ statusmsg }}</div>
-    <button class="slitbtn" v-on:click="startsliting">XIF</button>
+    <button class="slitbtn" v-on:click="startsliting">Start</button>
     <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
   </div>
 </template>
@@ -41,21 +40,12 @@
 import { defineComponent, ref } from 'vue';
 import './App.scss';
 
+import path from 'path';
 import { ipcRenderer } from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 
 export default defineComponent({
   setup() {
-
-    // const imagesdir = ref('');
-    // const gjpath = ref('');
-    // const totalimages = ref(0);
-    
-    // const imagesdirdisplay = ref('X://folder');
-    // const gjpathdisplay = ref('Y://file.csv');
-
-    // const defaultMsg = 'Click XIF to Start';
-    // const statusmsg = ref(defaultMsg);
 
     const sourcefolders: any = ref([
       { id: 'uuid1', path: 'D:/jack' },
@@ -96,13 +86,53 @@ export default defineComponent({
       sourcefolders.value = filteredFoldersList;
     }
 
-    // const startsliting = () => {
+    const geojsonfolder = ref('');
+    const targetfolder = ref('');
 
-    // }
+    const totalgjs = ref(0);
+    
+    const gjfolderdisplay = ref('X://folder1');
+    const targetfolderdisplay = ref('Y://folder2');
+
+    const defaultMsg = 'Click XIF to Start';
+    const statusmsg = ref(defaultMsg);
+
+    const selectgeojsonsfolder = () => {
+      ipcRenderer.send('open-folder', ['Select GeoJSONs Folder', 'gjsfolder']);
+    }
+
+    const selecttargetfolder = () => {
+      ipcRenderer.send('open-folder', ['Select Target Folder', 'targetfolder']);
+    }
+
+    ipcRenderer.on('gjsfolder', (event, arg) => {
+      geojsonfolder.value = arg;
+
+      let foldername = path.basename(arg);
+      gjfolderdisplay.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
+    });
+
+    ipcRenderer.on('targetfolder', (event, arg) => {
+      targetfolder.value = arg;
+
+      let foldername = path.basename(arg);
+      targetfolderdisplay.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
+    });
+
+    const startsliting = () => {
+    }
+
+    const exitnow = () => {
+      ipcRenderer.send('exit-now');
+    }
 
     return {
       sliting,
-      sourcefolders, addsourcefolder, removefolder
+      geojsonfolder, totalgjs, gjfolderdisplay, statusmsg,
+      targetfolder, targetfolderdisplay,
+      sourcefolders, addsourcefolder, removefolder,
+      selectgeojsonsfolder, selecttargetfolder,
+      startsliting, exitnow
     }
   },
 })
