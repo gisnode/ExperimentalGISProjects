@@ -19,7 +19,7 @@
         <td><button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder">GeoJSONs Folder</button></td>
         <td>
           <span class="infomsg">{{ gjfolderdisplay }}</span><br>
-          <span class="infomsg">GeoJSONs Total: {{ totalgjs }}</span>
+          <span class="countmsg">GeoJSONs Total: {{ totalgjs }}</span>
         </td>
       </tr>
       <tr>
