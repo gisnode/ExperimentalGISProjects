@@ -373,11 +373,11 @@ export default defineComponent({
       }
     }
 
-    const execCLI = (cliCMD: any) => new Promise((resolve, reject) => {
+    const execCLI = (cliCMD: any) => new Promise((resolve) => {
       try {
         // execSync(cmd);
-        exec(cliCMD);
         modimages.value = modimages.value + 1;
+        exec(cliCMD, () => resolve(0));
       } catch (e) {}
     })
 
