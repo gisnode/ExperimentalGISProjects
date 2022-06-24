@@ -57,6 +57,7 @@ export default defineComponent({
       // { id: 'uuid6', path: 'E:/mack' },
       // { id: 'uuid7', path: 'E:/mack' },
       // { id: 'uuid8', path: 'E:/mack' },
+      { id: '1', path: 'D:/44P395421-44P396421/Geotagged/FLY_0086_17_03_22_05_27_08_039/Geotagged/UMC-R10C (PPK)' }
     ]);
 
     const sliting = ref(false);
@@ -88,8 +89,10 @@ export default defineComponent({
       sourcefolders.value = filteredFoldersList;
     }
 
-    const geojsonsfolder = ref('');
-    const targetfolder = ref('');
+    // const geojsonsfolder = ref('');
+    // const targetfolder = ref('');
+    const geojsonsfolder = ref('D:/slitrtest/gjs');
+    const targetfolder = ref('D:/slitrtest/trgt');
 
     const totalgjs = ref(0);
     
@@ -148,9 +151,16 @@ export default defineComponent({
         return;
       }
 
-      
-
       console.log('started...');
+      readGeoJSONNProceed();
+    }
+
+    const readGeoJSONNProceed = () => {
+      const gjs = fs.readdirSync(geojsonsfolder.value).filter(img => {
+        return path.extname(img).toLowerCase() == '.geojson'
+      }).map((gjname: any) => path.join(geojsonsfolder.value, gjname));
+
+      console.log(gjs);
     }
 
     const exitnow = () => {
