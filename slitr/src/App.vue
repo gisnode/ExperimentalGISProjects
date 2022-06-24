@@ -96,7 +96,7 @@ export default defineComponent({
     const gjfolderdisplay = ref('X://folder1');
     const targetfolderdisplay = ref('Y://folder2');
 
-    const defaultMsg = 'Click XIF to Start';
+    const defaultMsg = 'Click on Start';
     const statusmsg = ref(defaultMsg);
 
     const selectgeojsonsfolder = () => {
@@ -133,6 +133,11 @@ export default defineComponent({
     }
 
     const startsliting = () => {
+      if(sourcefolders.value.length == 0){
+        showTempMsg('Add Source Folders', 2);
+        return;
+      }
+      
       if(geojsonsfolder.value == ''){
         showTempMsg('Select GeoJSONs Folder', 2);
         return;
