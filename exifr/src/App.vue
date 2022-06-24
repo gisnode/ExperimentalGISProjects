@@ -352,11 +352,6 @@ export default defineComponent({
           let cmd = `"${execPath.value}" ${exifCLI} "${path.join(imagesdir.value, jpgimgs[i])}"`;
           // console.log(cmd);
           cmdCommandsToExecute.push(cmd);
-          // try {
-          //   // execSync(cmd);
-          //   exec(cmd);
-          //   modimages.value = modimages.value + 1;
-          // } catch (e) {}
         } else {
           extraImages.push(jpgimgs[i]);
         }
@@ -372,8 +367,19 @@ export default defineComponent({
     }
 
     const executeCommands = async (cmdCommandsToExecute: any) => {
-      
+      for(let i = 0; i < cmdCommandsToExecute.length; i++){
+        // console.log(cmdCommandsToExecute[i]);
+        await Promise.allSettled([ execCLI(cmdCommandsToExecute[i]) ]);
+      }
     }
+
+    const execCLI = (cliCMD: any) => new Promise((resolve, reject) => {
+      try {
+        // execSync(cmd);
+        exec(cliCMD);
+        modimages.value = modimages.value + 1;
+      } catch (e) {}
+    })
 
     const removeGPSExif = () => {
       const files = fs.readdirSync(imagesdir.value);
