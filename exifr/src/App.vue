@@ -367,10 +367,13 @@ export default defineComponent({
       for(let i = 0; i < cmdCommandsToExecute.length; i++){
         // console.log(cmdCommandsToExecute[i]);
 
-        await execCLI(cmdCommandsToExecute[i]);
+        await execCLI(cmdCommandsToExecute[i])
 
         imgmodtry.value = imgmodtry.value + 1;
-        if((i + 1) >= geoinfo.value){
+
+        let cond1 = action.value == '1' && (i + 1) >= geoinfo.value;
+        let cond2 = action.value == '0' && (i + 1) >= totalimages.value;
+        if(cond1 || cond2){
           statusmsg.value = 'Completed';
           exifing.value = false;
         }
@@ -379,10 +382,8 @@ export default defineComponent({
 
     const execCLI = (cliCMD: any) => new Promise((resolve) => {
       try {
-        exec(cliCMD, () => {
-          resolve(0);
-        });
-      } catch (e) {}
+        exec(cliCMD, () => resolve(0));
+      } catch (e) { resolve(1) }
     })
 
     const removeGPSExif = () => {
@@ -406,19 +407,14 @@ export default defineComponent({
       // console.log(exifArray);
       let exifCLI = exifArray.join(' ');
 
+      let cmdCommandsToExecute = [];
       for (let i = 0; i < jpgimgs.length; i++){
         let cmd = `"${execPath.value}" ${exifCLI} "${path.join(imagesdir.value, jpgimgs[i])}"`;
         // console.log(cmd);
-        try {
-          execSync(cmd);
-          imgmodtry.value = imgmodtry.value + 1;
-        } catch (e: any) {
-          // console.log(e.toString());
-        }
+        cmdCommandsToExecute.push(cmd);
       }
 
-      statusmsg.value = 'Completed';
-      exifing.value = false;
+      executeCommands(cmdCommandsToExecute);
     }
 
     const exportGPSExif = () => {
