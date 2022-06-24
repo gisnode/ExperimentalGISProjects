@@ -6,7 +6,7 @@
       <label>Remove</label>
 
       <input type="radio" value="1" v-model="action" checked>
-      <label>Add / Set</label>
+      <label>Add / Replace</label>
 
       <input type="radio" value="2" v-model="action" >
       <label>Export</label>
@@ -97,7 +97,7 @@ import { ipcRenderer } from 'electron';
 import { parse } from 'csv-parse/sync';
 import { stringify } from 'csv-stringify/sync';
 
-import { execSync } from 'child_process';
+import { execSync, exec } from 'child_process';
 
 export default defineComponent({
   setup() {
@@ -341,7 +341,8 @@ export default defineComponent({
       let missingImagesTxt = missingImages.join('\r\n');
       fs.writeFileSync(path.join(imagesdir.value, '0_MissingImages.txt'), missingImagesTxt);
 
-      let extraImages = [];
+      let extraImages: any = [];
+      let cmdCommandsToExecute = [];
       for (let i = 0; i < jpgimgs.length; i++){
         // console.log(jpgimgs[i]);
         // console.log(mappedObjects[jpgimgs[i]]);
@@ -350,10 +351,12 @@ export default defineComponent({
         if(exifCLI != undefined){
           let cmd = `"${execPath.value}" ${exifCLI} "${path.join(imagesdir.value, jpgimgs[i])}"`;
           // console.log(cmd);
-          try {
-            execSync(cmd);
-            modimages.value = modimages.value + 1;
-          } catch (e) {}
+          cmdCommandsToExecute.push(cmd);
+          // try {
+          //   // execSync(cmd);
+          //   exec(cmd);
+          //   modimages.value = modimages.value + 1;
+          // } catch (e) {}
         } else {
           extraImages.push(jpgimgs[i]);
         }
@@ -362,8 +365,14 @@ export default defineComponent({
       let extraImagesTxt = extraImages.join('\r\n');
       fs.writeFileSync(path.join(imagesdir.value, '0_ExtraImages.txt'), extraImagesTxt);
 
+      executeCommands(cmdCommandsToExecute);
+
       statusmsg.value = 'Completed';
       exifing.value = false;
+    }
+
+    const executeCommands = async (cmdCommandsToExecute: any) => {
+      
     }
 
     const removeGPSExif = () => {
