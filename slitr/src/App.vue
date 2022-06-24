@@ -18,7 +18,7 @@
       <tr>
         <td><button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder">GeoJSONs Folder</button></td>
         <td>
-          <span class="infomsg" v-bind:title="geojsonfolder">{{ gjfolderdisplay }}</span><br>
+          <span class="infomsg" v-bind:title="geojsonsfolder">{{ gjfolderdisplay }}</span><br>
           <span class="countmsg">GeoJSONs Total: {{ totalgjs }}</span>
         </td>
       </tr>
@@ -41,6 +41,8 @@ import { defineComponent, ref } from 'vue';
 import './App.scss';
 
 import path from 'path';
+import fs from 'fs';
+
 import { ipcRenderer } from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -48,10 +50,10 @@ export default defineComponent({
   setup() {
 
     const sourcefolders: any = ref([
-      { id: 'uuid1', path: 'D:/jack' },
-      { id: 'uuid2', path: 'E:/mack' },
-      { id: 'uuid4', path: 'E:/mack' },
-      { id: 'uuid5', path: 'E:/mack' },
+      // { id: 'uuid1', path: 'D:/jack' },
+      // { id: 'uuid2', path: 'E:/mack' },
+      // { id: 'uuid4', path: 'E:/mack' },
+      // { id: 'uuid5', path: 'E:/mack' },
       // { id: 'uuid6', path: 'E:/mack' },
       // { id: 'uuid7', path: 'E:/mack' },
       // { id: 'uuid8', path: 'E:/mack' },
@@ -86,7 +88,7 @@ export default defineComponent({
       sourcefolders.value = filteredFoldersList;
     }
 
-    const geojsonfolder = ref('');
+    const geojsonsfolder = ref('');
     const targetfolder = ref('');
 
     const totalgjs = ref(0);
@@ -106,10 +108,14 @@ export default defineComponent({
     }
 
     ipcRenderer.on('gjsfolder', (event, arg) => {
-      geojsonfolder.value = arg;
+      geojsonsfolder.value = arg;
 
       let foldername = path.basename(arg);
       gjfolderdisplay.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
+
+      totalgjs.value = fs.readdirSync(arg).filter(img => {
+        return path.extname(img).toLowerCase() == '.geojson'
+      }).length;
     });
 
     ipcRenderer.on('targetfolder', (event, arg) => {
@@ -119,7 +125,27 @@ export default defineComponent({
       targetfolderdisplay.value = foldername.length < 10 ? foldername : foldername.substring(0, 10) + '...';
     });
 
+    const showTempMsg = (msg: any, seconds: any) => {
+      statusmsg.value = msg;
+      setTimeout(() => {
+        statusmsg.value = defaultMsg;
+      }, seconds * 1000);
+    }
+
     const startsliting = () => {
+      if(geojsonsfolder.value == ''){
+        showTempMsg('Select GeoJSONs Folder', 2);
+        return;
+      }
+
+      if(targetfolder.value == ''){
+        showTempMsg('Select Target Folder', 2);
+        return;
+      }
+
+      
+
+      console.log('started...');
     }
 
     const exitnow = () => {
@@ -128,7 +154,7 @@ export default defineComponent({
 
     return {
       sliting,
-      geojsonfolder, totalgjs, gjfolderdisplay, 
+      geojsonsfolder, totalgjs, gjfolderdisplay, 
       targetfolder, targetfolderdisplay,
       sourcefolders, addsourcefolder, removefolder,
       selectgeojsonsfolder, selecttargetfolder,
