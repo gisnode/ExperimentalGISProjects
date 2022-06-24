@@ -363,15 +363,13 @@ export default defineComponent({
       executeCommands(cmdCommandsToExecute);
     }
 
-    const simulExecs = 3;
     const executeCommands = async (cmdCommandsToExecute: any) => {
-      for(let i = 0; i < cmdCommandsToExecute.length; i += simulExecs){
+      for(let i = 0; i < cmdCommandsToExecute.length; i++){
         // console.log(cmdCommandsToExecute[i]);
-        // const chunk = cmdCommandsToExecute.slice(i, i + simulExecs);
 
-        await Promise.allSettled([ execCLI(cmdCommandsToExecute[i]), execCLI(cmdCommandsToExecute[i + 1]), execCLI(cmdCommandsToExecute[i + 2]) ]);
+        await execCLI(cmdCommandsToExecute[i]);
 
-        imgmodtry.value = imgmodtry.value + simulExecs;
+        imgmodtry.value = imgmodtry.value + 1;
         if((i + 1) >= geoinfo.value){
           statusmsg.value = 'Completed';
           exifing.value = false;
