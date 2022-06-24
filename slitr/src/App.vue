@@ -18,14 +18,14 @@
       <tr>
         <td><button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder">GeoJSONs Folder</button></td>
         <td>
-          <span class="infomsg">{{ gjfolderdisplay }}</span><br>
+          <span class="infomsg" v-bind:title="geojsonfolder">{{ gjfolderdisplay }}</span><br>
           <span class="countmsg">GeoJSONs Total: {{ totalgjs }}</span>
         </td>
       </tr>
       <tr>
         <td><button class="targetfldrbtn" v-on:click="selecttargetfolder" v-bind:disabled="sliting">Target Folder</button></td>
         <td>
-          <span class="infomsg">{{ targetfolderdisplay }}</span><br>
+          <span class="infomsg" v-bind:title="targetfolder">{{ targetfolderdisplay }}</span><br>
         </td>
       </tr>
     </table>
@@ -128,11 +128,11 @@ export default defineComponent({
 
     return {
       sliting,
-      geojsonfolder, totalgjs, gjfolderdisplay, statusmsg,
+      geojsonfolder, totalgjs, gjfolderdisplay, 
       targetfolder, targetfolderdisplay,
       sourcefolders, addsourcefolder, removefolder,
       selectgeojsonsfolder, selecttargetfolder,
-      startsliting, exitnow
+      statusmsg, startsliting, exitnow
     }
   },
 })
