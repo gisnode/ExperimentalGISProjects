@@ -35,11 +35,11 @@ import { v4 as uuidv4 } from 'uuid';
 export default defineComponent({
   setup() {
     const sourcefolders: any = ref([
-      { id: 'uuid1', path: 'D:/jack' },
-      { id: 'uuid2', path: 'E:/mack' },
-      { id: 'uuid2', path: 'E:/mack' },
-      { id: 'uuid2', path: 'E:/mack' },
-      { id: 'uuid2', path: 'E:/mack' },
+      // { id: 'uuid1', path: 'D:/jack' },
+      // { id: 'uuid2', path: 'E:/mack' },
+      // { id: 'uuid2', path: 'E:/mack' },
+      // { id: 'uuid2', path: 'E:/mack' },
+      // { id: 'uuid2', path: 'E:/mack' },
       { id: '1', path: 'D:/44P395421-44P396421/Geotagged/FLY_0086_17_03_22_05_27_08_039/Geotagged/UMC-R10C (PPK)' }
     ]);
 
