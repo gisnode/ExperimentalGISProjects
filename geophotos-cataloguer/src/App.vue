@@ -1,6 +1,12 @@
 <template>
   <div id="approot">
     <div class="title">GEOPHOTOS CATALOGR</div><br>
+    <div class="systeminfo">
+      <div>{{ systeminfo1 }}</div>
+      <div>{{ systeminfo2 }}</div>
+      <div>{{ systeminfo3 }}</div>
+    </div><br>
+
     <div class="sourcefoldertitle">SOURCE FOLDERS:</div>
     <div class="sourcefolders">
       <button class="addbtn" v-on:click="addsourcefolder" v-bind:disabled="running">+</button>
@@ -23,9 +29,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import './App.scss';
 
+import os from 'os';
 import path from 'path';
 import fs from 'fs';
 
@@ -34,6 +41,16 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default defineComponent({
   setup() {
+    const systeminfo1 = ref('');
+    const systeminfo2 = ref('');
+    const systeminfo3 = ref('');
+
+    onMounted(() => {
+      systeminfo1.value = `HostName: ${os.hostname()} `;
+      systeminfo2.value = `User: ${os.userInfo().username}`;
+      systeminfo3.value = `Machine: ${os.arch()} ${os.platform()} ${os.endianness()}`;
+    });
+
     const sourcefolders: any = ref([
       // { id: 'uuid1', path: 'D:/jack' },
       // { id: 'uuid2', path: 'E:/mack' },
@@ -92,6 +109,7 @@ export default defineComponent({
       }
 
       console.log('started...');
+      // console.log(os.systeminfo1());
     }
 
     const exitnow = () => {
@@ -99,6 +117,7 @@ export default defineComponent({
     }
 
     return {
+      systeminfo1, systeminfo2, systeminfo3,
       running, totalimages, totalfolders,
       sourcefolders, addsourcefolder, removefolder,
       statusmsg, startrunning, exitnow

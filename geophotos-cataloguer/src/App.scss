@@ -31,6 +31,10 @@ $secondarythemecolor: rgb(100, 58, 131);
   -webkit-app-region: drag;
 }
 
+.systeminfo {
+  color: rgba($secondarythemecolor, 0.7);
+}
+
 .sourcefoldertitle {
   margin: auto;
   width: 80%;
@@ -99,7 +103,7 @@ $foldersheight: 100px;
           border-radius: 5px;
           background-color: rgba($secondarythemecolor, 0.7);
           color: white;
-          
+
           &:active {
             background-color: white;
           }
