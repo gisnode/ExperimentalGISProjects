@@ -38,6 +38,7 @@ import fs from 'fs';
 
 import { ipcRenderer } from 'electron';
 import { v4 as uuidv4 } from 'uuid';
+import fg from 'fast-glob';
 
 export default defineComponent({
   setup() {
@@ -116,6 +117,12 @@ export default defineComponent({
       for(let i = 0; i < sourcefolders.value.length; i++){
         console.log(sourcefolders.value[i]);
       }
+
+      const entries = fg.sync('*.JPG', {
+        cwd: 'D:/TESTS/exifrtestbig/imgs'
+      });
+
+      console.log(entries);
     }
 
     const exitnow = () => {
