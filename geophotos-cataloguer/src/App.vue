@@ -229,7 +229,7 @@ export default defineComponent({
 
             // (camera, lon, lat, alt, path)
             db.prepare('INSERT INTO cameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
-            .run(path.basename(imagePath), 1, 2, 3, imagePath).lastInsertRowid;
+            .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
 
             imagescatalogued.value = imagescatalogued.value + 1;
             resolve(0);
