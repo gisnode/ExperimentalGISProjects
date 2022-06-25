@@ -1,11 +1,24 @@
 <template>
   <div id="approot">
     <div class="title">GEOPHOTOS CATALOGR</div><br>
-    <div class="systeminfo">
-      <div>{{ systeminfo1 }}</div>
-      <div>{{ systeminfo2 }}</div>
-      <div>{{ systeminfo3 }}</div>
-    </div><br>
+    <table style="margin:auto;">
+      <tr>
+        <td>
+          <div class="systeminfo">
+            <div>{{ systeminfo1 }}</div>
+            <div>{{ systeminfo2 }}</div>
+            <div>{{ systeminfo3 }}</div>
+          </div>
+        </td>
+        <td>
+          <div class="outfoldercontainer">
+            <div><button class="outfolderbtn" v-on:click="selectoutfolder" v-bind:disabled="running">Output Folder</button></div>
+            <div><span class="secondarymsg" v-bind:title="outputfolder">{{ outputfolder }}</span></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <br>
 
     <div class="sourcefoldertitle">SOURCE FOLDERS:</div>
     <div class="sourcefolders">
@@ -20,8 +33,8 @@
       </div>
     </div><br>
 
-    <div class="countmsg">Images Catalogued: {{ imagescatalogued }}</div><br>
-    <div class="actionmsg">{{ statusmsg }}</div>
+    <div class="secondarymsg">Images Catalogued: {{ imagescatalogued }}</div><br>
+    <div class="primarymsg">{{ statusmsg }}</div>
     <button class="startbtn" v-on:click="startrunning" v-bind:disabled="running">Start</button>
     <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
   </div>
@@ -85,6 +98,17 @@ export default defineComponent({
       sourcefolders.value = filteredFoldersList;
     }
 
+    const outputfolder = ref('');
+
+    const selectoutfolder = () => {
+      ipcRenderer.send('open-folder', ['Select Output Folder', 'outputfolder']);
+    }
+
+    ipcRenderer.on('outputfolder', (event, arg) => {
+      // console.log(arg);
+      outputfolder.value = arg;
+    });
+
     const defaultMsg = 'Click on Start';
     const statusmsg = ref(defaultMsg);
 
@@ -136,7 +160,7 @@ export default defineComponent({
 
     return {
       systeminfo1, systeminfo2, systeminfo3,
-      running, imagescatalogued,
+      running, imagescatalogued, outputfolder, selectoutfolder,
       sourcefolders, addsourcefolder, removefolder,
       statusmsg, startrunning, exitnow
     }
