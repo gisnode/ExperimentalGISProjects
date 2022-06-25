@@ -1,9 +1,11 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, dialog, ipcMain  } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+import path from 'path'
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -80,3 +82,39 @@ if (isDevelopment) {
     })
   }
 }
+
+ipcMain.on('open-folder', (evt, arg) => {
+  dialog.showOpenDialog({
+    title: arg[0],
+    // defaultPath: 'D:\\',
+    properties: ['openDirectory']
+  }).then(res => {
+    if(!res.canceled){
+      evt.sender.send(arg[1], res.filePaths[0]);
+    }
+  });  
+});
+
+ipcMain.on('open-file', (evt, arg) => {
+  dialog.showOpenDialog({
+    title: arg[0],
+    // defaultPath: 'D:\\',
+    properties: ['openFile']
+  }).then(res => {
+    if(!res.canceled){
+      evt.sender.send(arg[1], res.filePaths[0]);
+    }
+  });  
+});
+
+ipcMain.on('binary-path', (evt, arg) => {
+  const binaryPath = !isDevelopment && app.isPackaged
+    ? path.join(path.dirname(app.getAppPath()), './bin')
+    : path.join(process.cwd(), './src', './resources', './bin');
+
+  evt.sender.send('binary-path', binaryPath);
+});
+
+ipcMain.on('exit-now', (evt, arg) => {
+  app.exit();
+});
