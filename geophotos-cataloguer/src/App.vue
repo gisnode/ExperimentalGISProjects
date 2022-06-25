@@ -143,7 +143,7 @@ export default defineComponent({
       startCataloging();
     }
 
-    const outdb = ref();
+    const outdbref = ref();
 
     const startCataloging = async () => {
       setUpDatabase();
@@ -169,9 +169,25 @@ export default defineComponent({
       running.value = false;
     }
 
+    const addGNSSEntryForCamera = (imagePath: any) => new Promise(resolve => {
+
+    });
+
+    // const getInfo
+
     const setUpDatabase = () => {
-      console.log(path.join(outputfolder.value, 'cameras.db'));
-      const j = new Database('D:/TESTS/exifrtest/cameras.db');
+      const dbPath = path.join(outputfolder.value, 'cameras.db'); 
+      const db = new Database(dbPath);
+
+      const createTable = `CREATE TABLE IF NOT EXISTS cameras (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        camera TEXT,
+        lon REAL, lat REAL, alt REAL,
+        path TEXT
+      )`;
+
+      db.exec(createTable);
+      outdbref.value = db;
     }
 
     const exitnow = () => {
