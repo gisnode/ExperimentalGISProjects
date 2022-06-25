@@ -104,13 +104,14 @@ export default defineComponent({
       }
 
       imagescatalogued.value = 0;
+      console.log();
 
       startCataloging();
     }
 
     const startCataloging = async () => {
       for(let i = 0; i < sourcefolders.value.length; i++){
-        console.log(sourcefolders.value[i].path);
+        // console.log(sourcefolders.value[i].path);
 
         const stream = fg.stream(['**/*.jpg', '**/*.jpeg'], { 
           cwd: sourcefolders.value[i].path,
