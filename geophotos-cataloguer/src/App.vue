@@ -15,14 +15,14 @@
           <span class="folderpath" v-bind:title="folder.path">
             {{ folder.path.length > 36 ? folder.path.substring(0, 36) + '...' : folder.path }}
           </span>
-          <span class="removefolderbtn"><button v-on:click="removefolder" v-bind:id="folder.id">-</button></span>
+          <span class="removefolderbtn"><button v-on:click="removefolder" v-bind:id="folder.id" v-bind:disabled="running">-</button></span>
         </div>
       </div>
     </div><br>
 
     <div class="countmsg">Images Catalogued: {{ imagescatalogued }}</div><br>
     <div class="actionmsg">{{ statusmsg }}</div>
-    <button class="startbtn" v-on:click="startrunning">Start</button>
+    <button class="startbtn" v-on:click="startrunning" v-bind:disabled="running">Start</button>
     <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
   </div>
 </template>
@@ -104,7 +104,8 @@ export default defineComponent({
       }
 
       imagescatalogued.value = 0;
-      console.log();
+      running.value = true;
+      statusmsg.value = defaultMsg;
 
       startCataloging();
     }
@@ -124,6 +125,9 @@ export default defineComponent({
           imagescatalogued.value = imagescatalogued.value + 1;
         }
       }
+
+      statusmsg.value = 'Completed';
+      running.value = false;
     }
 
     const exitnow = () => {
