@@ -17,7 +17,7 @@
     <div class="countmsg">Total Images: {{ totalimages }}</div>
     <div class="countmsg">Total Folders: {{ totalfolders }}</div><br>
     <div class="actionmsg">{{ statusmsg }}</div>
-    <button class="slitbtn" v-on:click="startrunning">Start</button>
+    <button class="startbtn" v-on:click="startrunning">Start</button>
     <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
   </div>
 </template>

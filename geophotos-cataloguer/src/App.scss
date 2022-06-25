@@ -11,8 +11,8 @@ html, body {
   padding: 0;
 }
 
-$primarythemecolor: #2c3e50;
-$secondarythemecolor: rgb(201, 67, 138);
+$primarythemecolor: #1d1baa;
+$secondarythemecolor: rgb(100, 58, 131);
 
 #approot {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -99,6 +99,7 @@ $foldersheight: 100px;
           border-radius: 5px;
           background-color: rgba($secondarythemecolor, 0.7);
           color: white;
+          
           &:active {
             background-color: white;
           }
@@ -128,25 +129,7 @@ $foldersheight: 100px;
   background: #555; 
 }
 
-.targetfldrbtn {
-  padding: 6px;
-
-  margin: 10px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  background-color: rgba($primarythemecolor, 0.7);
-
-  &:active {
-    background-color: rgba(187, 38, 207, 0.486);
-  }
-
-  &:disabled {
-    background-color: rgba(69, 65, 70, 0.486);
-  }
-}
-
-.slitbtn, .xitbtn {
+.startbtn, .xitbtn {
   padding: 4px;
 
   margin: 6px;
@@ -163,7 +146,7 @@ $foldersheight: 100px;
   }
 }
 
-.slitbtn {
+.startbtn {
   background-color: rgba($primarythemecolor, 0.7);
 }
 
