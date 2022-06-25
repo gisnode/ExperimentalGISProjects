@@ -171,7 +171,7 @@ export default defineComponent({
 
     const setUpDatabase = () => {
       console.log(path.join(outputfolder.value, 'cameras.db'));
-      // new Database(path.join(outputfolder.value, 'cameras.db'));
+      const j = new Database('D:/TESTS/exifrtest/cameras.db');
     }
 
     const exitnow = () => {

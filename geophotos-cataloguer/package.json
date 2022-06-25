@@ -8,6 +8,7 @@
     "electron:build": "vue-cli-service electron:build",
     "buildportable": "vue-cli-service electron:build --windows portable:x64",
     "electron:serve": "vue-cli-service electron:serve",
+    "rebuild": "electron-rebuild -f -w better-sqlite3",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
@@ -28,6 +29,7 @@
     "@vue/cli-service": "~5.0.0",
     "electron": "^13.0.0",
     "electron-devtools-installer": "^3.1.0",
+    "electron-rebuild": "^3.2.7",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
     "ts-loader": "~8.2.0",
