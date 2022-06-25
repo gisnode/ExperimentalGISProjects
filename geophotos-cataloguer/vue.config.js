@@ -7,6 +7,15 @@ module.exports = defineConfig({
         win: {
           icon: 'src/assets/icon.png'
         },
+        extraResources: [
+          {
+            "from": "src/resources/bin",
+            "to": "bin",
+            "filter": [
+              "**/*"
+            ]
+          }
+        ]
       },
       nodeIntegration: true
     }

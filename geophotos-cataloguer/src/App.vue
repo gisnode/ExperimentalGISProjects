@@ -109,7 +109,13 @@ export default defineComponent({
       }
 
       console.log('started...');
-      // console.log(os.systeminfo1());
+      startCataloging();
+    }
+
+    const startCataloging = () => {
+      for(let i = 0; i < sourcefolders.value.length; i++){
+        console.log(sourcefolders.value[i]);
+      }
     }
 
     const exitnow = () => {
