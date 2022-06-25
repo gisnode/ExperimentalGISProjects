@@ -12,8 +12,12 @@
         </td>
         <td>
           <div class="outfoldercontainer">
-            <div><button class="outfolderbtn" v-on:click="selectoutfolder" v-bind:disabled="running">Output Folder</button></div>
-            <div><span class="secondarymsg" v-bind:title="outputfolder">{{ outputfolder }}</span></div>
+            <div><button class="outfolderbtn" v-on:click="selectoutfolder" v-bind:disabled="running">Out DB Path</button></div>
+            <div>
+              <span class="secondarymsg" v-bind:title="outputfolder">
+              {{ outputfolder.length > 36 ? outputfolder.substring(0, 20) + '...' : outputfolder }}
+              </span>
+            </div>
           </div>
         </td>
       </tr>
@@ -46,11 +50,11 @@ import './App.scss';
 
 import os from 'os';
 import path from 'path';
-import fs from 'fs';
 
 import { ipcRenderer } from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 import fg from 'fast-glob';
+import Database from 'better-sqlite3';
 
 export default defineComponent({
   setup() {
@@ -98,7 +102,7 @@ export default defineComponent({
       sourcefolders.value = filteredFoldersList;
     }
 
-    const outputfolder = ref('');
+    const outputfolder = ref('D:/TESTS/exifrtest');
 
     const selectoutfolder = () => {
       ipcRenderer.send('open-folder', ['Select Output Folder', 'outputfolder']);
@@ -127,6 +131,11 @@ export default defineComponent({
         return;
       }
 
+      if(outputfolder.value == ''){
+        showTempMsg('Set Output Folder', 2);
+        return;
+      }
+
       imagescatalogued.value = 0;
       running.value = true;
       statusmsg.value = defaultMsg;
@@ -134,7 +143,11 @@ export default defineComponent({
       startCataloging();
     }
 
+    const outdb = ref();
+
     const startCataloging = async () => {
+      setUpDatabase();
+
       for(let i = 0; i < sourcefolders.value.length; i++){
         // console.log(sourcefolders.value[i].path);
 
@@ -145,13 +158,20 @@ export default defineComponent({
         });
 
         for await (const entry of stream) {
-          // console.log(entry);
+          let imagePath = path.join(sourcefolders.value[i].path, entry.toString());
+          // console.log(imagePath);
+
           imagescatalogued.value = imagescatalogued.value + 1;
         }
       }
 
       statusmsg.value = 'Completed';
       running.value = false;
+    }
+
+    const setUpDatabase = () => {
+      console.log(path.join(outputfolder.value, 'cameras.db'));
+      // new Database(path.join(outputfolder.value, 'cameras.db'));
     }
 
     const exitnow = () => {
