@@ -20,8 +20,7 @@
       </div>
     </div><br>
 
-    <div class="countmsg">Total Images: {{ totalimages }}</div>
-    <div class="countmsg">Total Folders: {{ totalfolders }}</div><br>
+    <div class="countmsg">Images Catalogued: {{ imagescatalogued }}</div><br>
     <div class="actionmsg">{{ statusmsg }}</div>
     <button class="startbtn" v-on:click="startrunning">Start</button>
     <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
@@ -53,12 +52,7 @@ export default defineComponent({
     });
 
     const sourcefolders: any = ref([
-      // { id: 'uuid1', path: 'D:/jack' },
-      // { id: 'uuid2', path: 'E:/mack' },
-      // { id: 'uuid2', path: 'E:/mack' },
-      // { id: 'uuid2', path: 'E:/mack' },
-      // { id: 'uuid2', path: 'E:/mack' },
-      { id: '1', path: 'D:/44P395421-44P396421/Geotagged/FLY_0086_17_03_22_05_27_08_039/Geotagged/UMC-R10C (PPK)' }
+      { id: '1', path: 'D:/TESTS/exifrtestbig' }
     ]);
 
     const running = ref(false);
@@ -69,6 +63,7 @@ export default defineComponent({
 
     ipcRenderer.on('sourcefolder', (event, arg) => {
       // console.log(arg);
+      imagescatalogued.value = 0;
 
       const foldersArry = [ ...sourcefolders.value, {
         id: uuidv4(),
@@ -93,8 +88,7 @@ export default defineComponent({
     const defaultMsg = 'Click on Start';
     const statusmsg = ref(defaultMsg);
 
-    const totalimages = ref(0);
-    const totalfolders = ref(0);
+    const imagescatalogued = ref(0);
 
     const showTempMsg = (msg: any, seconds: any) => {
       statusmsg.value = msg;
@@ -109,20 +103,26 @@ export default defineComponent({
         return;
       }
 
-      console.log('started...');
+      imagescatalogued.value = 0;
+
       startCataloging();
     }
 
-    const startCataloging = () => {
+    const startCataloging = async () => {
       for(let i = 0; i < sourcefolders.value.length; i++){
-        console.log(sourcefolders.value[i]);
+        console.log(sourcefolders.value[i].path);
+
+        const stream = fg.stream(['**/*.jpg', '**/*.jpeg'], { 
+          cwd: sourcefolders.value[i].path,
+          caseSensitiveMatch: false,
+          suppressErrors: true
+        });
+
+        for await (const entry of stream) {
+          // console.log(entry);
+          imagescatalogued.value = imagescatalogued.value + 1;
+        }
       }
-
-      const entries = fg.sync('*.JPG', {
-        cwd: 'D:/TESTS/exifrtestbig/imgs'
-      });
-
-      console.log(entries);
     }
 
     const exitnow = () => {
@@ -131,7 +131,7 @@ export default defineComponent({
 
     return {
       systeminfo1, systeminfo2, systeminfo3,
-      running, totalimages, totalfolders,
+      running, imagescatalogued,
       sourcefolders, addsourcefolder, removefolder,
       statusmsg, startrunning, exitnow
     }
