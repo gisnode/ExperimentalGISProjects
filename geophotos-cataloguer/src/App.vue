@@ -12,10 +12,10 @@
           <span class="removefolderbtn"><button v-on:click="removefolder" v-bind:id="folder.id">-</button></span>
         </div>
       </div>
-    </div>
+    </div><br>
 
-    <div class="countmsg">Total Images: {{ statusmsg }}</div>
-    <div class="countmsg">Total Folders: {{ statusmsg }}</div><br>
+    <div class="countmsg">Total Images: {{ totalimages }}</div>
+    <div class="countmsg">Total Folders: {{ totalfolders }}</div><br>
     <div class="actionmsg">{{ statusmsg }}</div>
     <button class="slitbtn" v-on:click="startrunning">Start</button>
     <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
@@ -35,8 +35,11 @@ import { v4 as uuidv4 } from 'uuid';
 export default defineComponent({
   setup() {
     const sourcefolders: any = ref([
-      // { id: 'uuid1', path: 'D:/jack' },
-      // { id: 'uuid2', path: 'E:/mack' },
+      { id: 'uuid1', path: 'D:/jack' },
+      { id: 'uuid2', path: 'E:/mack' },
+      { id: 'uuid2', path: 'E:/mack' },
+      { id: 'uuid2', path: 'E:/mack' },
+      { id: 'uuid2', path: 'E:/mack' },
       { id: '1', path: 'D:/44P395421-44P396421/Geotagged/FLY_0086_17_03_22_05_27_08_039/Geotagged/UMC-R10C (PPK)' }
     ]);
 
@@ -96,7 +99,7 @@ export default defineComponent({
     }
 
     return {
-      running,
+      running, totalimages, totalfolders,
       sourcefolders, addsourcefolder, removefolder,
       statusmsg, startrunning, exitnow
     }
