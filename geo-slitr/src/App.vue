@@ -24,10 +24,9 @@
       </tr>
       <tr>
         <td>
-          <button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder">GeoJSONs Folder</button>
+          <button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder" v-bind:disabled="running">GeoJSONs Folder ({{ totalgjs }})</button>
         </td>
         <td>
-          <span class="primarymsg">Count: {{ totalgjs }}</span><br>
           <span class="secondarymsg" v-bind:title="geojsonsfolder">
             {{ getBaseName(geojsonsfolder).length > 20 ? getBaseName(geojsonsfolder).substring(0, 20) + '...' : getBaseName(geojsonsfolder) }}
           </span>
@@ -49,8 +48,12 @@
       </div>
     </div><br>
 
-    <div class="secondarymsg">Images Came Across: {{ imagescameacross }}</div>
-    <div class="secondarymsg">Images Catalogued: {{ imagescatalogued }}</div><br>
+    <div class="primarymsg">
+      <span>Buffer (m): </span>
+      <span><input type="number" v-model="buffer" style="width: 60px;" v-bind:disabled="running" min="0" max="1000"></span>
+    </div><br>
+    <div class="secondarymsg">Photos Came Across: {{ imagescameacross }}</div>
+    <div class="secondarymsg">GeoPhotos Copied: {{ imagescopied }}</div><br>
     <div class="primarymsg">{{ statusmsg }}</div>
     <button class="startbtn" v-on:click="startrunning" v-bind:disabled="running">Start</button>
     <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
@@ -84,7 +87,7 @@ export default defineComponent({
     });
 
     const sourcefolders: any = ref([
-      // { id: '1', path: 'D:/TESTS/exifrtest' }
+      { id: '1', path: 'D:/TESTS/slitrtstmed/imgs' }
     ]);
 
     const running = ref(false);
@@ -95,7 +98,7 @@ export default defineComponent({
 
     ipcRenderer.on('sourcefolder', (event, arg) => {
       // console.log(arg);
-      imagescatalogued.value = 0;
+      imagescopied.value = 0;
 
       const foldersArry = [ ...sourcefolders.value, {
         id: uuidv4(),
@@ -117,8 +120,8 @@ export default defineComponent({
       sourcefolders.value = filteredFoldersList;
     }
 
-    // const outputfolder = ref('D:/TESTS/exifrtest');
-    const outputfolder = ref('');
+    const outputfolder = ref('D:/TESTS/slitrtstmed/out');
+    // const outputfolder = ref('');
     const geojsonsfolder = ref('');
 
     const selectoutfolder = () => {
@@ -148,12 +151,12 @@ export default defineComponent({
     const statusmsg = ref(defaultMsg);
 
     const imagescameacross = ref(0);
-    const imagescatalogued = ref(0);
+    const imagescopied = ref(0);
 
     const showTempMsg = (msg: any, seconds: any) => {
       statusmsg.value = msg;
       setTimeout(() => {
-        statusmsg.value = defaultMsg;
+        statusmsg.value = defaultMsg; 
       }, seconds * 1000);
     }
 
@@ -183,12 +186,22 @@ export default defineComponent({
       }
 
       if(outputfolder.value == ''){
-        showTempMsg('Set Out DB Path', 2);
+        showTempMsg('Set Output Folder', 2);
+        return;
+      }
+
+      if(geojsonsfolder.value == ''){
+        showTempMsg('Select GeoJSONs Folder', 2);
+        return;
+      }
+
+      if(totalgjs.value == 0){
+        showTempMsg('Empty GeoJSONs Folder', 2);
         return;
       }
 
       imagescameacross.value = 0;
-      imagescatalogued.value = 0;
+      imagescopied.value = 0;
 
       running.value = true;
       statusmsg.value = defaultMsg;
@@ -259,7 +272,7 @@ export default defineComponent({
             // db.prepare('INSERT INTO gnsscameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
             // .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
 
-            imagescatalogued.value = imagescatalogued.value + 1;
+            imagescopied.value = imagescopied.value + 1;
             resolve(0);
           } catch (e) {
             insertRawCamera(imagePath);
@@ -278,14 +291,16 @@ export default defineComponent({
       // .run(path.basename(imagePath), path.dirname(imagePath)).lastInsertRowid;
     }
 
+    const buffer = ref(100);
+
     const exitnow = () => {
       ipcRenderer.send('exit-now');
     }
 
     return {
       systeminfo1, systeminfo2, systeminfo3, getBaseName,
-      running, imagescameacross, imagescatalogued, 
-      outputfolder, geojsonsfolder, totalgjs,
+      running, imagescameacross, imagescopied, 
+      outputfolder, geojsonsfolder, totalgjs, buffer,
       selectoutfolder, selectgeojsonsfolder,
       sourcefolders, addsourcefolder, removefolder,
       statusmsg, startrunning, exitnow
