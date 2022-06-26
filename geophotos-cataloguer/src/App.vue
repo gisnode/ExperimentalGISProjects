@@ -75,7 +75,7 @@ export default defineComponent({
     });
 
     const sourcefolders: any = ref([
-      { id: '1', path: 'D:/TESTS/exifrtest' }
+      // { id: '1', path: 'D:/TESTS/exifrtest' }
     ]);
 
     const running = ref(false);
@@ -108,7 +108,8 @@ export default defineComponent({
       sourcefolders.value = filteredFoldersList;
     }
 
-    const outputfolder = ref('D:/TESTS/exifrtest');
+    // const outputfolder = ref('D:/TESTS/exifrtest');
+    const outputfolder = ref('');
 
     const selectoutfolder = () => {
       ipcRenderer.send('open-folder', ['Select Output Folder', 'outputfolder']);
@@ -154,7 +155,7 @@ export default defineComponent({
       }
 
       if(outputfolder.value == ''){
-        showTempMsg('Set Output Folder', 2);
+        showTempMsg('Set Out DB Path', 2);
         return;
       }
 
