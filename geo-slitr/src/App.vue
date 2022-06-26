@@ -189,8 +189,10 @@ export default defineComponent({
     });
 
     let gjsObjArry: any = [];
+    let gjsCSVInfo: any = {};
     const initialSetup = () => {
       gjsObjArry = [];
+      gjsCSVInfo = {};
       
       const gjs = fs.readdirSync(geojsonsfolder.value).filter(entry => {
         return path.extname(entry).toLowerCase() == '.geojson'
@@ -198,6 +200,8 @@ export default defineComponent({
 
       for(let i = 0; i < gjs.length; i++){
         let gjName = path.parse(gjs[i]).name;
+
+        gjsCSVInfo[gjName] = [];
 
         let gjDir = path.join(outputfolder.value, gjName);
         // console.log(gjDir);
@@ -255,7 +259,7 @@ export default defineComponent({
       checkNStartCopying();
     }
 
-    let gjsCSVInfo: any = {};
+    
     const checkNStartCopying = async () => {
       for(let i = 0; i < sourcefolders.value.length; i++){
         // console.log(sourcefolders.value[i].path);
@@ -275,7 +279,11 @@ export default defineComponent({
         }
       }
 
-      console.log(Object.keys(gjsCSVInfo));
+      for (let i = 0; i < gjsObjArry.length; i++){
+        let gjName = gjsObjArry[i]['name'];
+        console.log(gjsCSVInfo[gjName]);
+      }
+
       statusmsg.value = 'Completed';
       running.value = false;
     }
@@ -325,7 +333,10 @@ export default defineComponent({
                 let targetDir = gjsObjArry[i]['dir'];
                 let imageName = path.basename(imagePath);
 
-                gjsCSVInfo[gjName] = '';
+                gjsCSVInfo[gjName] = [
+                  ...gjsCSVInfo[gjName],
+                  [imageName, gpsLon, gpsLat]
+                ];
 
                 fs.copyFile(imagePath, path.join(targetDir, imageName), () => {
                   imagescopied.value = imagescopied.value + 1;
