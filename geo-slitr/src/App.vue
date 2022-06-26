@@ -68,11 +68,13 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs';
 
+import { exec } from 'child_process';
+
 import { ipcRenderer } from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 import fg from 'fast-glob';
+import * as turf from '@turf/turf';
 
-import { exec } from 'child_process';
 
 export default defineComponent({
   setup() {
@@ -122,7 +124,7 @@ export default defineComponent({
 
     const outputfolder = ref('D:/TESTS/slitrtstmed/out');
     // const outputfolder = ref('');
-    const geojsonsfolder = ref('');
+    const geojsonsfolder = ref('D:/TESTS/slitrtstmed/gjs');
 
     const selectoutfolder = () => {
       ipcRenderer.send('open-folder', ['Select Output Folder', 'outputfolder']);
@@ -142,10 +144,14 @@ export default defineComponent({
     ipcRenderer.on('gjsfolder', (event, arg) => {
       geojsonsfolder.value = arg;
 
-      totalgjs.value = fs.readdirSync(arg).filter(img => {
-        return path.extname(img).toLowerCase() == '.geojson'
-      }).length;
+      calcGeoJSONs(geojsonsfolder.value);
     });
+
+    const calcGeoJSONs = (gjpath: any) => {
+      totalgjs.value = fs.readdirSync(gjpath).filter(entry => {
+        return path.extname(entry).toLowerCase() == '.geojson'
+      }).length;
+    }
 
     const defaultMsg = 'Click on Start';
     const statusmsg = ref(defaultMsg);
@@ -179,6 +185,40 @@ export default defineComponent({
       getBinaryPath();
     });
 
+    const gjsObjArry = ref();
+    const initialSetup = () => {
+      gjsObjArry.value = [];
+      
+      let gjsArry = [];
+      const gjs = fs.readdirSync(geojsonsfolder.value).filter(entry => {
+        return path.extname(entry).toLowerCase() == '.geojson'
+      });
+
+      for(let i = 0; i < gjs.length; i++){
+        let gjName = path.parse(gjs[i]).name;
+
+        let gjDir = path.join(outputfolder.value, gjName);
+        // console.log(gjDir);
+
+        if (!fs.existsSync(gjDir)){
+          fs.mkdirSync(gjDir);
+        }
+
+        let gjContent = JSON.parse(fs.readFileSync(path.join(geojsonsfolder.value, gjs[i]), 'utf-8'));
+        let bufferedFeature = turf.buffer(gjContent.features[0], buffer.value, { units: 'meters' });
+
+        let gjObj = {
+          'name': gjName,
+          'dir': gjDir,
+          'featbuff': bufferedFeature
+        };
+
+        gjsArry.push(gjObj);
+      }
+
+      gjsObjArry.value = gjsArry;
+    }
+
     const startrunning = () => {
       if(sourcefolders.value.length == 0){
         showTempMsg('Add Source Folders', 2);
@@ -195,16 +235,22 @@ export default defineComponent({
         return;
       }
 
+      calcGeoJSONs(geojsonsfolder.value);
+
       if(totalgjs.value == 0){
         showTempMsg('Empty GeoJSONs Folder', 2);
         return;
       }
 
+      initialSetup();
+
+      // console.log(gjsObjArry.value);
+
       imagescameacross.value = 0;
       imagescopied.value = 0;
 
       running.value = true;
-      statusmsg.value = defaultMsg;
+      statusmsg.value = 'Running';
 
       startCataloging();
     }
