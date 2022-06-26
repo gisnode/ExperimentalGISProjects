@@ -260,7 +260,6 @@ export default defineComponent({
 
       checkNStartCopying();
     }
-
     
     const checkNStartCopying = async () => {
       for(let i = 0; i < sourcefolders.value.length; i++){
@@ -288,7 +287,9 @@ export default defineComponent({
         let csvContent = gjsCSVInfo[gjName];
         csvContent.unshift(['image', 'lon', 'lat']);
 
-        fs.writeFileSync(path.join(outputfolder.value, `${gjName}-cameras.csv`), stringify(csvContent));
+        try {
+          fs.writeFileSync(path.join(outputfolder.value, `${gjName}-cameras.csv`), stringify(csvContent));
+        } catch (e) {}
       }
 
       statusmsg.value = 'Completed';
@@ -323,12 +324,6 @@ export default defineComponent({
             if(isNaN(gpsLon) || isNaN(gpsLat)) {
               resolve(1);
             }
-
-            // let gjObj = {
-            //   'name': gjName,
-            //   'dir': gjDir,
-            //   'featbuff': bufferedFeature
-            // };
 
             // console.log(gpsLon, gpsLat, imagePath);
             const ptFeat = turf.point([gpsLon, gpsLat]);
