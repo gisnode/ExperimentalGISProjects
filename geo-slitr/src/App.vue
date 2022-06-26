@@ -123,8 +123,9 @@ export default defineComponent({
     }
 
     const outputfolder = ref('D:/TESTS/slitrtstmed/out');
-    // const outputfolder = ref('');
     const geojsonsfolder = ref('D:/TESTS/slitrtstmed/gjs');
+    // const outputfolder = ref('');
+    // const geojsonsfolder = ref('');
 
     const selectoutfolder = () => {
       ipcRenderer.send('open-folder', ['Select Output Folder', 'outputfolder']);
@@ -159,6 +160,8 @@ export default defineComponent({
     const imagescameacross = ref(0);
     const imagescopied = ref(0);
 
+    const buffer = ref(100);
+
     const showTempMsg = (msg: any, seconds: any) => {
       statusmsg.value = msg;
       setTimeout(() => {
@@ -189,7 +192,6 @@ export default defineComponent({
     const initialSetup = () => {
       gjsObjArry = [];
       
-      let gjsArry = [];
       const gjs = fs.readdirSync(geojsonsfolder.value).filter(entry => {
         return path.extname(entry).toLowerCase() == '.geojson'
       });
@@ -253,6 +255,7 @@ export default defineComponent({
       checkNStartCopying();
     }
 
+    let gjsCSVInfo = {};
     const checkNStartCopying = async () => {
       for(let i = 0; i < sourcefolders.value.length; i++){
         // console.log(sourcefolders.value[i].path);
@@ -305,12 +308,28 @@ export default defineComponent({
               resolve(1);
             }
 
-            console.log(gpsLon, gpsLat, imagePath);
-            // for(let i = 0; i < gjs.length; i++){
+            // let gjObj = {
+            //   'name': gjName,
+            //   'dir': gjDir,
+            //   'featbuff': bufferedFeature
+            // };
 
-            // }
+            // console.log(gpsLon, gpsLat, imagePath);
+            const ptFeat = turf.point([gpsLon, gpsLat]);
 
-            imagescopied.value = imagescopied.value + 1;
+            for(let i = 0; i < gjsObjArry.length; i++){
+              const featbuff = gjsObjArry[i]['featbuff'];
+              if(turf.booleanWithin(ptFeat, featbuff)){
+                let targetDir = gjsObjArry[i]['dir'];
+                let imageName = path.basename(imagePath);
+
+                fs.copyFile(imagePath, path.join(targetDir, imageName), () => {
+                  imagescopied.value = imagescopied.value + 1;
+                  resolve(0);
+                });
+              }
+            }
+
             resolve(0);
           } catch (e) {
             resolve(1);
@@ -320,8 +339,6 @@ export default defineComponent({
         resolve(1);
       }
     });
-
-    const buffer = ref(100);
 
     const exitnow = () => {
       ipcRenderer.send('exit-now');
