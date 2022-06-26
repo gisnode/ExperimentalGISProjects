@@ -89,7 +89,7 @@ export default defineComponent({
     });
 
     const sourcefolders: any = ref([
-      { id: '1', path: 'D:/TESTS/slitrtstmed/imgs' }
+      // { id: '1', path: 'D:/TESTS/slitrtstmed/imgs' }
     ]);
 
     const running = ref(false);
@@ -122,10 +122,10 @@ export default defineComponent({
       sourcefolders.value = filteredFoldersList;
     }
 
-    const outputfolder = ref('D:/TESTS/slitrtstmed/out');
-    const geojsonsfolder = ref('D:/TESTS/slitrtstmed/gjs');
-    // const outputfolder = ref('');
-    // const geojsonsfolder = ref('');
+    // const outputfolder = ref('D:/TESTS/slitrtstmed/out');
+    // const geojsonsfolder = ref('D:/TESTS/slitrtstmed/gjs');
+    const outputfolder = ref('');
+    const geojsonsfolder = ref('');
 
     const selectoutfolder = () => {
       ipcRenderer.send('open-folder', ['Select Output Folder', 'outputfolder']);
