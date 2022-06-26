@@ -1,4 +1,4 @@
-# geophotos-cataloguer
+# slitr
 
 ## Project setup
 ```

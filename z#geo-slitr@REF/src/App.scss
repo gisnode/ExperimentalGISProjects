@@ -11,62 +11,21 @@ html, body {
   padding: 0;
 }
 
-$primarythemecolor: #aa461b;
-$secondarythemecolor: rgb(73, 72, 57);
-
 #approot {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: $primarythemecolor;
-  margin-top: 40px;
+  color: #2c3e50;
+  margin-top: 10px;
 }
 
 .title {
   font-family: 'Lucida Calligraphy';
   font-size: 25px;
-  text-shadow: 4px 4px rgba($secondarythemecolor, 0.2);
+  text-shadow: 4px 4px rgba(255, 0, 0, 0.2);
 
   -webkit-app-region: drag;
-}
-
-.movable {
-  position: absolute;
-  top: 30px;
-  right: 60px;
-  z-index: 99;
-  
-  > svg {
-    transform: scale(0.6);
-    fill: rgba($primarythemecolor, 0.8);
-  }
-}
-
-td {
-  padding: 0px 20px;
-}
-
-.systeminfo {
-  color: rgba($secondarythemecolor, 0.7);
-}
-
-.outfolderbtn {
-  padding: 4px 6px;
-
-  // margin: 10px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  background-color: rgba($primarythemecolor, 0.7);
-
-  &:active {
-      background-color: rgba(187, 38, 207, 0.486);
-  }
-
-  &:disabled {
-      background-color: rgba(69, 65, 70, 0.486);
-  }
 }
 
 .sourcefoldertitle {
@@ -74,9 +33,10 @@ td {
   width: 80%;
   text-align: left;
 
-  color: rgba($primarythemecolor, 0.7);
+  color: rgba(74, 34, 153, 0.703);
 }
 
+$bordernaddbtn: rgba(156, 63, 63, 0.645);
 $foldersheight: 100px;
 
 .sourcefolders {
@@ -87,13 +47,13 @@ $foldersheight: 100px;
 
   text-align: left;
 
-  border: 2px solid rgba($primarythemecolor, 0.7);
+  border: 2px solid $bordernaddbtn;
 
   > .addbtn {
     float: right;
 
     margin: 2px;
-    background-color: rgba($primarythemecolor, 0.7);
+    background-color: $bordernaddbtn;
     border: none;
     font-size: 20px;
     color: white;
@@ -101,10 +61,6 @@ $foldersheight: 100px;
 
     &:active {
       background-color: #2c3e50;
-    }
-    
-    &:disabled {
-      background-color: rgba(69, 65, 70, 0.486);
     }
   }
 
@@ -139,15 +95,10 @@ $foldersheight: 100px;
           border: none;
 
           border-radius: 5px;
-          background-color: rgba($secondarythemecolor, 0.7);
+          background-color: rgba(186, 107, 43, 0.644);
           color: white;
-
           &:active {
             background-color: white;
-          }
-
-          &:disabled {
-            background-color: rgba(69, 65, 70, 0.486);
           }
         }
       }
@@ -175,7 +126,32 @@ $foldersheight: 100px;
   background: #555; 
 }
 
-.startbtn, .xitbtn {
+.gjsfldrbtn, .targetfldrbtn {
+  padding: 6px;
+
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+
+  &:active {
+      background-color: rgba(187, 38, 207, 0.486);
+  }
+
+  &:disabled {
+      background-color: rgba(69, 65, 70, 0.486);
+  }
+}
+
+.gjsfldrbtn {
+  background-color: rgba(207, 148, 38, 0.726);
+}
+
+.targetfldrbtn {
+  background-color: rgba(121, 147, 17, 0.726);
+}
+
+.slitbtn, .xitbtn {
   padding: 4px;
 
   margin: 6px;
@@ -184,7 +160,7 @@ $foldersheight: 100px;
   border-radius: 2px;
 
   &:active {
-    background-color: rgba(187, 38, 207, 0.486);
+      background-color: rgba(187, 38, 207, 0.486);
   }
 
   &:disabled {
@@ -192,18 +168,22 @@ $foldersheight: 100px;
   }
 }
 
-.startbtn {
-  background-color: rgba($primarythemecolor, 0.7);
+.slitbtn {
+  background-color: rgba(38, 86, 207, 0.726);
 }
 
 .xitbtn {
-  background-color: rgba($secondarythemecolor, 0.7);
+  background-color: rgba(213, 40, 40, 0.726);
 }
 
-.secondarymsg {
-  color: rgba($secondarythemecolor, 0.7);
+.infomsg {
+  color: rgba(40, 65, 207, 0.596);
 }
 
-.primarymsg {
-  color: rgba($primarythemecolor, 0.7);
+.countmsg {
+  color: rgba(161, 36, 61, 0.697);
+}
+
+.actionmsg {
+  color: rgba(207, 39, 190, 0.632);
 }
