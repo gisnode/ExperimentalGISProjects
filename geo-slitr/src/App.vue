@@ -16,7 +16,7 @@
         <td>
           <button class="outfolderbtn" v-on:click="selectoutfolder" v-bind:disabled="running">Output Folder</button>
         </td>
-        <td>
+        <td style="min-width: 120px">
           <span class="secondarymsg" v-bind:title="outputfolder">
             {{ getBaseName(outputfolder).length > 20 ? getBaseName(outputfolder).substring(0, 20) + '...' : getBaseName(outputfolder) }}
           </span>
