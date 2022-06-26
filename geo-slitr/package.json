@@ -8,13 +8,11 @@
     "electron:build": "vue-cli-service electron:build",
     "buildportable": "vue-cli-service electron:build --windows portable:x64",
     "electron:serve": "vue-cli-service electron:serve",
-    "rebuild": "electron-rebuild -f -w better-sqlite3",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
   "main": "background.js",
   "dependencies": {
-    "better-sqlite3": "^7.5.3",
     "core-js": "^3.8.3",
     "fast-glob": "^3.2.11",
     "uuid": "^8.3.2",

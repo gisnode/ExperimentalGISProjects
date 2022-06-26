@@ -17,11 +17,9 @@
           <button class="outfolderbtn" v-on:click="selectoutfolder" v-bind:disabled="running">Output Folder</button>
         </td>
         <td>
-          <div>
-            <span class="secondarymsg" v-bind:title="outputfolder">
-              {{ outputfolder.length > 36 ? outputfolder.substring(0, 20) + '...' : outputfolder }}
-            </span>
-          </div>
+          <span class="secondarymsg" v-bind:title="outputfolder">
+            {{ getBaseName(outputfolder).length > 20 ? getBaseName(outputfolder).substring(0, 20) + '...' : getBaseName(outputfolder) }}
+          </span>
         </td>
       </tr>
       <tr>
@@ -29,8 +27,10 @@
           <button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder">GeoJSONs Folder</button>
         </td>
         <td>
-          <span class="infomsg" v-bind:title="geojsonsfolder">{{ gjfolderdisplay }}</span><br>
-          <span class="countmsg">GeoJSONs Total: {{ totalgjs }}</span>
+          <span class="primarymsg">Count: {{ totalgjs }}</span><br>
+          <span class="secondarymsg" v-bind:title="geojsonsfolder">
+            {{ getBaseName(geojsonsfolder).length > 20 ? getBaseName(geojsonsfolder).substring(0, 20) + '...' : getBaseName(geojsonsfolder) }}
+          </span>
         </td>
       </tr>
     </table>
@@ -63,11 +63,11 @@ import './App.scss';
 
 import os from 'os';
 import path from 'path';
+import fs from 'fs';
 
 import { ipcRenderer } from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 import fg from 'fast-glob';
-import Database from 'better-sqlite3';
 
 import { exec } from 'child_process';
 
@@ -119,6 +119,7 @@ export default defineComponent({
 
     // const outputfolder = ref('D:/TESTS/exifrtest');
     const outputfolder = ref('');
+    const geojsonsfolder = ref('');
 
     const selectoutfolder = () => {
       ipcRenderer.send('open-folder', ['Select Output Folder', 'outputfolder']);
@@ -127,6 +128,20 @@ export default defineComponent({
     ipcRenderer.on('outputfolder', (event, arg) => {
       // console.log(arg);
       outputfolder.value = arg;
+    });
+
+    const selectgeojsonsfolder = () => {
+      ipcRenderer.send('open-folder', ['Select GeoJSONs Folder', 'gjsfolder']);
+    }
+
+    const totalgjs = ref(0);
+
+    ipcRenderer.on('gjsfolder', (event, arg) => {
+      geojsonsfolder.value = arg;
+
+      totalgjs.value = fs.readdirSync(arg).filter(img => {
+        return path.extname(img).toLowerCase() == '.geojson'
+      }).length;
     });
 
     const defaultMsg = 'Click on Start';
@@ -140,6 +155,10 @@ export default defineComponent({
       setTimeout(() => {
         statusmsg.value = defaultMsg;
       }, seconds * 1000);
+    }
+
+    const getBaseName = (pathName: any) => {
+      return path.basename(pathName);
     }
 
     const execPath = ref('');
@@ -178,7 +197,6 @@ export default defineComponent({
     }
 
     const startCataloging = async () => {
-      setUpDatabase();
       for(let i = 0; i < sourcefolders.value.length; i++){
         // console.log(sourcefolders.value[i].path);
 
@@ -237,9 +255,9 @@ export default defineComponent({
 
             // console.log(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath);
 
-            const db = new Database(path.join(outputfolder.value, 'cameras.db'));
-            db.prepare('INSERT INTO gnsscameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
-            .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
+            // const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+            // db.prepare('INSERT INTO gnsscameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
+            // .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
 
             imagescatalogued.value = imagescatalogued.value + 1;
             resolve(0);
@@ -255,29 +273,9 @@ export default defineComponent({
     });
 
     const insertRawCamera = (imagePath: any) => {
-      const db = new Database(path.join(outputfolder.value, 'cameras.db'));
-      db.prepare('INSERT INTO rawcameras (camera, parentfolder) VALUES (?, ?)')
-      .run(path.basename(imagePath), path.dirname(imagePath)).lastInsertRowid;
-    }
-
-    const setUpDatabase = () => {
-      const db = new Database(path.join(outputfolder.value, 'cameras.db'));
-
-      const createTable1 = `CREATE TABLE IF NOT EXISTS gnsscameras (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        camera TEXT,
-        lon REAL, lat REAL, alt REAL,
-        path TEXT
-      )`;
-
-      const createTable2 = `CREATE TABLE IF NOT EXISTS rawcameras (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        camera TEXT,
-        parentfolder TEXT
-      )`;
-
-      db.exec(createTable1);
-      db.exec(createTable2);
+      // const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+      // db.prepare('INSERT INTO rawcameras (camera, parentfolder) VALUES (?, ?)')
+      // .run(path.basename(imagePath), path.dirname(imagePath)).lastInsertRowid;
     }
 
     const exitnow = () => {
@@ -285,9 +283,10 @@ export default defineComponent({
     }
 
     return {
-      systeminfo1, systeminfo2, systeminfo3,
+      systeminfo1, systeminfo2, systeminfo3, getBaseName,
       running, imagescameacross, imagescatalogued, 
-      outputfolder, selectoutfolder,
+      outputfolder, geojsonsfolder, totalgjs,
+      selectoutfolder, selectgeojsonsfolder,
       sourcefolders, addsourcefolder, removefolder,
       statusmsg, startrunning, exitnow
     }

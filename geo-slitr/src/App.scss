@@ -51,8 +51,9 @@ td {
   color: rgba($secondarythemecolor, 0.7);
 }
 
-.outfolderbtn {
-  padding: 4px 6px;
+.outfolderbtn, .gjsfldrbtn {
+  padding: 10px;
+  font-size: 14px;
 
   // margin: 10px;
   border: none;
@@ -177,6 +178,7 @@ $foldersheight: 100px;
 
 .startbtn, .xitbtn {
   padding: 4px;
+  font-size: 16px;
 
   margin: 6px;
   border: none;
