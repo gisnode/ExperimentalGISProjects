@@ -5,7 +5,7 @@ module.exports = defineConfig({
     electronBuilder: {
       builderOptions: {
         win: {
-          icon: 'src/assets/icon.png'
+          icon: 'src/assets/icon.jpg'
         },
         extraResources: [
           {
