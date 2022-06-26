@@ -185,9 +185,9 @@ export default defineComponent({
       getBinaryPath();
     });
 
-    const gjsObjArry = ref();
+    let gjsObjArry: any = [];
     const initialSetup = () => {
-      gjsObjArry.value = [];
+      gjsObjArry = [];
       
       let gjsArry = [];
       const gjs = fs.readdirSync(geojsonsfolder.value).filter(entry => {
@@ -213,10 +213,8 @@ export default defineComponent({
           'featbuff': bufferedFeature
         };
 
-        gjsArry.push(gjObj);
+        gjsObjArry.push(gjObj);
       }
-
-      gjsObjArry.value = gjsArry;
     }
 
     const startrunning = () => {
@@ -244,7 +242,7 @@ export default defineComponent({
 
       initialSetup();
 
-      // console.log(gjsObjArry.value);
+      // console.log(gjsObjArry);
 
       imagescameacross.value = 0;
       imagescopied.value = 0;
@@ -252,10 +250,10 @@ export default defineComponent({
       running.value = true;
       statusmsg.value = 'Running';
 
-      startCataloging();
+      checkNStartCopying();
     }
 
-    const startCataloging = async () => {
+    const checkNStartCopying = async () => {
       for(let i = 0; i < sourcefolders.value.length; i++){
         // console.log(sourcefolders.value[i].path);
 
@@ -269,20 +267,18 @@ export default defineComponent({
           let imagePath = path.join(sourcefolders.value[i].path, entry.toString());
           // console.log(imagePath);
 
-          await addGNSSEntryForCamera(imagePath);
+          await checkNDoCopying(imagePath);
           imagescameacross.value = imagescameacross.value + 1;
         }
       }
 
       statusmsg.value = 'Completed';
       running.value = false;
-      // const db = new Database(path.join(outputfolder.value, 'cameras.db'));
-      // db.close();
     }
 
-    const addGNSSEntryForCamera = (imagePath: any) => new Promise(resolve => {
+    const checkNDoCopying = (imagePath: any) => new Promise(resolve => {
       try {
-        let cmdCLI = `"${execPath.value}" -K Exif.GPSInfo.GPSLongitude -K Exif.GPSInfo.GPSLatitude -K Exif.GPSInfo.GPSAltitude`;
+        let cmdCLI = `"${execPath.value}" -K Exif.GPSInfo.GPSLongitude -K Exif.GPSInfo.GPSLatitude`;
         cmdCLI += ` -Pv "${imagePath}"`;
 
         exec(cmdCLI, (error, stdout, stderr) => { 
@@ -297,45 +293,33 @@ export default defineComponent({
             let gpsLonS = parseInt(gpsLonParts[2].split('/')[0]) / parseInt(gpsLonParts[2].split('/')[1]);
             let gpsLon = gpsLonD + gpsLonM / 60 + gpsLonS / 3600;
             // console.log(gpsLonParts, gpsLonD, gpsLonM, gpsLonS);
+
             const gpsLatParts = gnssInfoParts[0].replace(/\s\s+/g, ' ').trim().split(' ');
             let gpsLatD = parseInt(gpsLatParts[0].split('/')[0]) / parseInt(gpsLatParts[0].split('/')[1]);
             let gpsLatM = parseInt(gpsLatParts[1].split('/')[0]) / parseInt(gpsLatParts[1].split('/')[1]);
             let gpsLatS = parseInt(gpsLatParts[2].split('/')[0]) / parseInt(gpsLatParts[2].split('/')[1]);
             let gpsLat = gpsLatD + gpsLatM / 60 + gpsLatS / 3600;
             // console.log(gpsLatParts, gpsLatD, gpsLatM, gpsLatS);
-            const gpsAltParts = gnssInfoParts[2].trim().split('/');
-            let gpsAlt = parseInt(gpsAltParts[0]) / parseInt(gpsAltParts[1]);
-            // console.log(gpsAltParts);
             
-            if(isNaN(gpsLon) || isNaN(gpsLat) || isNaN(gpsAlt)) {
-              insertRawCamera(imagePath);
+            if(isNaN(gpsLon) || isNaN(gpsLat)) {
               resolve(1);
             }
 
-            // console.log(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath);
+            console.log(gpsLon, gpsLat, imagePath);
+            // for(let i = 0; i < gjs.length; i++){
 
-            // const db = new Database(path.join(outputfolder.value, 'cameras.db'));
-            // db.prepare('INSERT INTO gnsscameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
-            // .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
+            // }
 
             imagescopied.value = imagescopied.value + 1;
             resolve(0);
           } catch (e) {
-            insertRawCamera(imagePath);
             resolve(1);
           }
         });
       } catch (e) {
-        insertRawCamera(imagePath);
         resolve(1);
       }
     });
-
-    const insertRawCamera = (imagePath: any) => {
-      // const db = new Database(path.join(outputfolder.value, 'cameras.db'));
-      // db.prepare('INSERT INTO rawcameras (camera, parentfolder) VALUES (?, ?)')
-      // .run(path.basename(imagePath), path.dirname(imagePath)).lastInsertRowid;
-    }
 
     const buffer = ref(100);
 
