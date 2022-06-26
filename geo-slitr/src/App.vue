@@ -210,6 +210,8 @@ export default defineComponent({
           fs.mkdirSync(gjDir);
         }
 
+        fs.copyFileSync(path.join(geojsonsfolder.value, gjs[i]), path.join(outputfolder.value,`${gjName}.geojson`));
+
         let gjContent = JSON.parse(fs.readFileSync(path.join(geojsonsfolder.value, gjs[i]), 'utf-8'));
         let bufferedFeature = turf.buffer(gjContent.features[0], buffer.value, { units: 'meters' });
 
@@ -286,7 +288,7 @@ export default defineComponent({
         let csvContent = gjsCSVInfo[gjName];
         csvContent.unshift(['image', 'lon', 'lat']);
 
-        fs.writeFileSync(path.join(outputfolder.value, `${gjName}.csv`), stringify(csvContent));
+        fs.writeFileSync(path.join(outputfolder.value, `${gjName}-cameras.csv`), stringify(csvContent));
       }
 
       statusmsg.value = 'Completed';
