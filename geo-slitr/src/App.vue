@@ -255,7 +255,7 @@ export default defineComponent({
       checkNStartCopying();
     }
 
-    let gjsCSVInfo = {};
+    let gjsCSVInfo: any = {};
     const checkNStartCopying = async () => {
       for(let i = 0; i < sourcefolders.value.length; i++){
         // console.log(sourcefolders.value[i].path);
@@ -275,6 +275,7 @@ export default defineComponent({
         }
       }
 
+      console.log(Object.keys(gjsCSVInfo));
       statusmsg.value = 'Completed';
       running.value = false;
     }
@@ -320,8 +321,11 @@ export default defineComponent({
             for(let i = 0; i < gjsObjArry.length; i++){
               const featbuff = gjsObjArry[i]['featbuff'];
               if(turf.booleanWithin(ptFeat, featbuff)){
+                let gjName = gjsObjArry[i]['name'];
                 let targetDir = gjsObjArry[i]['dir'];
                 let imageName = path.basename(imagePath);
+
+                gjsCSVInfo[gjName] = '';
 
                 fs.copyFile(imagePath, path.join(targetDir, imageName), () => {
                   imagescopied.value = imagescopied.value + 1;
