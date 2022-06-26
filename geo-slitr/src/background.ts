@@ -16,9 +16,8 @@ async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     // width: 600,
-    // height: 400,
     width: 800,
-    height: 600,
+    height: 550,
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -27,8 +26,8 @@ async function createWindow() {
           .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
     },
-    // resizable: false,
-    // frame: false
+    resizable: false,
+    frame: false
   })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
