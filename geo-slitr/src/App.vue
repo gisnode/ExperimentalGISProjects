@@ -74,7 +74,7 @@ import { ipcRenderer } from 'electron';
 import { v4 as uuidv4 } from 'uuid';
 import fg from 'fast-glob';
 import * as turf from '@turf/turf';
-
+import { stringify } from 'csv-stringify/sync';
 
 export default defineComponent({
   setup() {
@@ -281,7 +281,12 @@ export default defineComponent({
 
       for (let i = 0; i < gjsObjArry.length; i++){
         let gjName = gjsObjArry[i]['name'];
-        console.log(gjsCSVInfo[gjName]);
+        // console.log(gjsCSVInfo[gjName]);
+
+        let csvContent = gjsCSVInfo[gjName];
+        csvContent.unshift(['image', 'lon', 'lat']);
+
+        fs.writeFileSync(path.join(outputfolder.value, `${gjName}.csv`), stringify(csvContent));
       }
 
       statusmsg.value = 'Completed';
