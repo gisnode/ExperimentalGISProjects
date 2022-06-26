@@ -20,7 +20,7 @@ $secondarythemecolor: rgb(100, 58, 131);
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: $primarythemecolor;
-  margin-top: 10px;
+  margin-top: 40px;
 }
 
 .title {
@@ -29,6 +29,17 @@ $secondarythemecolor: rgb(100, 58, 131);
   text-shadow: 4px 4px rgba($secondarythemecolor, 0.2);
 
   -webkit-app-region: drag;
+}
+
+.movable {
+  position: absolute;
+  top: 30px;
+  right: 60px;
+  
+  > svg {
+    transform: scale(0.6);
+    fill: rgba($primarythemecolor, 0.8);
+  }
 }
 
 td {

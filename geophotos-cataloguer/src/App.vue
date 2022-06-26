@@ -1,5 +1,8 @@
 <template>
   <div id="approot">
+    <div class="movable">
+      <svg xmlns="http://www.w3.org/2000/svg" height="48" width="48"><path d="m24 44-8.15-8.15 2.2-2.2 4.45 4.45v-9.45h3v9.45l4.45-4.45 2.2 2.2ZM11.9 31.9 4 24l7.95-7.95 2.2 2.2L9.9 22.5h9.45v3H9.9l4.2 4.2Zm24.2 0-2.2-2.2 4.2-4.2h-9.4v-3h9.4l-4.2-4.2 2.2-2.2L44 24ZM22.5 19.3V9.9l-4.2 4.2-2.2-2.2L24 4l7.9 7.9-2.2 2.2-4.2-4.2v9.4Z"/></svg>
+    </div>
     <div class="title">GEOPHOTOS CATALOGR</div><br>
     <table style="margin:auto;">
       <tr>
@@ -164,8 +167,6 @@ export default defineComponent({
       startCataloging();
     }
 
-    const dboutref = ref();
-
     const startCataloging = async () => {
       setUpDatabase();
       for(let i = 0; i < sourcefolders.value.length; i++){
@@ -220,35 +221,53 @@ export default defineComponent({
             // console.log(gpsAltParts);
             
             if(isNaN(gpsLon) || isNaN(gpsLat) || isNaN(gpsAlt)) {
+              insertRawCamera(imagePath);
               resolve(1);
             }
 
             // console.log(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath);
 
             const db = new Database(path.join(outputfolder.value, 'cameras.db'));
-
-            // (camera, lon, lat, alt, path)
-            db.prepare('INSERT INTO cameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
+            db.prepare('INSERT INTO gnsscameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
             .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
 
             imagescatalogued.value = imagescatalogued.value + 1;
             resolve(0);
-          } catch (e) { resolve(1) }
+          } catch (e) {
+            insertRawCamera(imagePath);
+            resolve(1);
+          }
         });
-      } catch (e) { resolve(1) }
+      } catch (e) {
+        insertRawCamera(imagePath);
+        resolve(1);
+      }
     });
+
+    const insertRawCamera = (imagePath: any) => {
+      const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+      db.prepare('INSERT INTO rawcameras (camera, parentfolder) VALUES (?, ?)')
+      .run(path.basename(imagePath), path.dirname(imagePath)).lastInsertRowid;
+    }
 
     const setUpDatabase = () => {
       const db = new Database(path.join(outputfolder.value, 'cameras.db'));
 
-      const createTable = `CREATE TABLE IF NOT EXISTS cameras (
+      const createTable1 = `CREATE TABLE IF NOT EXISTS gnsscameras (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         camera TEXT,
         lon REAL, lat REAL, alt REAL,
         path TEXT
       )`;
 
-      db.exec(createTable);
+      const createTable2 = `CREATE TABLE IF NOT EXISTS rawcameras (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        camera TEXT,
+        parentfolder TEXT
+      )`;
+
+      db.exec(createTable1);
+      db.exec(createTable2);
     }
 
     const exitnow = () => {
