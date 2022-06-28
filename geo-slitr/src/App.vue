@@ -239,7 +239,7 @@ export default defineComponent({
       timerObj.moment = moment();
 
       timerObj.interval = setInterval(() => {
-        elapsedtimestring.value = moment().diff(timerObj.moment).toString();
+        elapsedtimestring.value = `${(moment().diff(timerObj.moment, 'minute') / 60).toFixed(2).toString()} mins`;
       }, 1000);
     }
 
