@@ -400,10 +400,14 @@ export default defineComponent({
 
             // console.log(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath);
 
+            // Catalogue GeoPhotos Into Database
             const db = new Database(path.join(outputfolder.value, 'cameras.db'));
             db.prepare('INSERT INTO gnsscameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
             .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
 
+            imagescatalogued.value = imagescatalogued.value + 1;
+
+            // Copy Geotagged Photos To Respective GeoJSON Folders
             if(geocopy.value){
               const ptFeat = turf.point([gpsLon, gpsLat]);
   
@@ -425,10 +429,9 @@ export default defineComponent({
                   });
                 }
               }
+            } else {
+              resolve(0);
             }
-
-            imagescatalogued.value = imagescatalogued.value + 1;
-            resolve(0);
           } catch (e) {
             insertRawCamera(imagePath);
             resolve(1);
