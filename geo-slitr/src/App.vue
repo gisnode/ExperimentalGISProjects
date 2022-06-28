@@ -78,7 +78,9 @@
     
     <div class="primarymsg">{{ statusmsg }}</div>
     <button class="startbtn" v-on:click="startrunning" v-bind:disabled="running">Start</button>
-    <button class="xitbtn" v-on:click="tryingtoexit = true" id="xitbtn">Exit</button>
+    
+    <button class="xitbtn" v-on:click="tryingtoexit = true" id="xitbtn" v-show="running">Exit</button>
+    <button class="xitbtn" v-on:click="exitnow" id="xitbtn" v-show="!running">Exit</button>
 
     <div class="confirmexit" v-show="tryingtoexit">
       <div class="confirmdialog">
