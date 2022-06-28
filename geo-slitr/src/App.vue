@@ -258,7 +258,7 @@ export default defineComponent({
 
     let gjsObjArry: any = [];
     let gjsCSVInfo: any = {};
-    const initialSetup = () => {
+    const initialGJSetup = () => {
       gjsObjArry = [];
       gjsCSVInfo = {};
       
@@ -317,7 +317,8 @@ export default defineComponent({
       }
 
       setUpDatabase();
-      initialSetup();
+      
+      if(geocopy.value) initialGJSetup();
 
       // console.log(gjsObjArry);
 
@@ -344,7 +345,7 @@ export default defineComponent({
           let imagePath = path.join(sourcefolders.value[i].path, entry.toString());
           // console.log(imagePath);
 
-          await checkNDoCopying(imagePath);
+          await checkNDoTwoJobs(imagePath);
           imagescameacross.value = imagescameacross.value + 1;
         }
       }
@@ -365,9 +366,9 @@ export default defineComponent({
       running.value = false;
     }
 
-    const checkNDoCopying = (imagePath: any) => new Promise(resolve => {
+    const checkNDoTwoJobs = (imagePath: any) => new Promise(resolve => {
       try {
-        let cmdCLI = `"${execPath.value}" -K Exif.GPSInfo.GPSLongitude -K Exif.GPSInfo.GPSLatitude`;
+        let cmdCLI = `"${execPath.value}" -K Exif.GPSInfo.GPSLongitude -K Exif.GPSInfo.GPSLatitude -K Exif.GPSInfo.GPSAltitude`;
         cmdCLI += ` -Pv "${imagePath}"`;
 
         exec(cmdCLI, (error, stdout, stderr) => { 
@@ -382,49 +383,68 @@ export default defineComponent({
             let gpsLonS = parseInt(gpsLonParts[2].split('/')[0]) / parseInt(gpsLonParts[2].split('/')[1]);
             let gpsLon = gpsLonD + gpsLonM / 60 + gpsLonS / 3600;
             // console.log(gpsLonParts, gpsLonD, gpsLonM, gpsLonS);
-
             const gpsLatParts = gnssInfoParts[0].replace(/\s\s+/g, ' ').trim().split(' ');
             let gpsLatD = parseInt(gpsLatParts[0].split('/')[0]) / parseInt(gpsLatParts[0].split('/')[1]);
             let gpsLatM = parseInt(gpsLatParts[1].split('/')[0]) / parseInt(gpsLatParts[1].split('/')[1]);
             let gpsLatS = parseInt(gpsLatParts[2].split('/')[0]) / parseInt(gpsLatParts[2].split('/')[1]);
             let gpsLat = gpsLatD + gpsLatM / 60 + gpsLatS / 3600;
             // console.log(gpsLatParts, gpsLatD, gpsLatM, gpsLatS);
+            const gpsAltParts = gnssInfoParts[2].trim().split('/');
+            let gpsAlt = parseInt(gpsAltParts[0]) / parseInt(gpsAltParts[1]);
+            // console.log(gpsAltParts);
             
-            if(isNaN(gpsLon) || isNaN(gpsLat)) {
+            if(isNaN(gpsLon) || isNaN(gpsLat) || isNaN(gpsAlt)) {
+              insertRawCamera(imagePath);
               resolve(1);
             }
 
-            // console.log(gpsLon, gpsLat, imagePath);
-            const ptFeat = turf.point([gpsLon, gpsLat]);
+            // console.log(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath);
 
-            for(let i = 0; i < gjsObjArry.length; i++){
-              const featbuff = gjsObjArry[i]['featbuff'];
-              if(turf.booleanWithin(ptFeat, featbuff)){
-                let gjName = gjsObjArry[i]['name'];
-                let targetDir = gjsObjArry[i]['dir'];
-                let imageName = path.basename(imagePath);
+            const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+            db.prepare('INSERT INTO gnsscameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
+            .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
 
-                gjsCSVInfo[gjName] = [
-                  ...gjsCSVInfo[gjName],
-                  [imageName, gpsLon, gpsLat]
-                ];
-
-                fs.copyFile(imagePath, path.join(targetDir, imageName), () => {
-                  imagescopied.value = imagescopied.value + 1;
-                  resolve(0);
-                });
+            if(geocopy.value){
+              const ptFeat = turf.point([gpsLon, gpsLat]);
+  
+              for(let i = 0; i < gjsObjArry.length; i++){
+                const featbuff = gjsObjArry[i]['featbuff'];
+                if(turf.booleanWithin(ptFeat, featbuff)){
+                  let gjName = gjsObjArry[i]['name'];
+                  let targetDir = gjsObjArry[i]['dir'];
+                  let imageName = path.basename(imagePath);
+  
+                  gjsCSVInfo[gjName] = [
+                    ...gjsCSVInfo[gjName],
+                    [imageName, gpsLon, gpsLat]
+                  ];
+  
+                  fs.copyFile(imagePath, path.join(targetDir, imageName), () => {
+                    imagescopied.value = imagescopied.value + 1;
+                    resolve(0);
+                  });
+                }
               }
             }
 
+            imagescatalogued.value = imagescatalogued.value + 1;
             resolve(0);
           } catch (e) {
+            insertRawCamera(imagePath);
             resolve(1);
           }
         });
       } catch (e) {
+        insertRawCamera(imagePath);
         resolve(1);
       }
     });
+
+    const insertRawCamera = (imagePath: any) => {
+      const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+      db.prepare('INSERT INTO rawcameras (camera, parentfolder) VALUES (?, ?)')
+      .run(path.basename(imagePath), path.dirname(imagePath)).lastInsertRowid;
+    }
 
     const exitnow = () => {
       ipcRenderer.send('exit-now');
