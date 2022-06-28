@@ -53,14 +53,10 @@ td {
 }
 
 .outfolderbtn, .gjsfldrbtn {
-  padding: 10px;
-  font-size: 14px;
-
   // margin: 10px;
   border: none;
   border-radius: 5px;
   color: white;
-  background-color: rgba($primarythemecolor, 0.7);
 
   &:active {
       background-color: rgba(187, 38, 207, 0.486);
@@ -69,6 +65,18 @@ td {
   &:disabled {
       background-color: rgba(69, 65, 70, 0.486);
   }
+}
+
+.outfolderbtn {
+  padding: 10px;
+  font-size: 16px;
+  background-color: rgba($primarythemecolor, 0.7);
+}
+
+.gjsfldrbtn {
+  padding: 10px;
+  font-size: 14px;
+  background-color: rgba($primarythemecolor, 0.5);
 }
 
 .sourcefoldertitle {

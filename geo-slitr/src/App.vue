@@ -6,7 +6,7 @@
     <div class="title">GEO SLITR</div><br>
     <table style="margin:auto;">
       <tr>
-        <td rowspan="2">
+        <td>
           <div class="systeminfo">
             <div>{{ systeminfo1 }}</div>
             <div>{{ systeminfo2 }}</div>
@@ -19,16 +19,6 @@
         <td style="min-width: 120px">
           <span class="secondarymsg" v-bind:title="outputfolder">
             {{ getBaseName(outputfolder).length > 20 ? getBaseName(outputfolder).substring(0, 20) + '...' : getBaseName(outputfolder) }}
-          </span>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder" v-bind:disabled="running">GeoJSONs Folder ({{ totalgjs }})</button>
-        </td>
-        <td>
-          <span class="secondarymsg" v-bind:title="geojsonsfolder">
-            {{ getBaseName(geojsonsfolder).length > 20 ? getBaseName(geojsonsfolder).substring(0, 20) + '...' : getBaseName(geojsonsfolder) }}
           </span>
         </td>
       </tr>
@@ -47,6 +37,17 @@
         </div>
       </div>
     </div><br>
+
+    <table>
+      <tr>
+        <td></td>
+      </tr>
+    </table>
+
+    <button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder" v-bind:disabled="running">GeoJSONs Folder ({{ totalgjs }})</button>
+    <span class="secondarymsg" v-bind:title="geojsonsfolder">
+      {{ getBaseName(geojsonsfolder).length > 20 ? getBaseName(geojsonsfolder).substring(0, 20) + '...' : getBaseName(geojsonsfolder) }}
+    </span>
 
     <div class="primarymsg">
       <span>Buffer (m): </span>
