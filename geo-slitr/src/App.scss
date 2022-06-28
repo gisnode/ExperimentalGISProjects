@@ -253,9 +253,12 @@ $foldersheight: 100px;
       position: relative;
       top: 50%;
       color: white;
-      font-size: 14px;
-
+      
       transform: translate(0%, -50%);
+
+      > span {
+        font-size: 16px;
+      }
 
       > button {
         padding: 4px;
