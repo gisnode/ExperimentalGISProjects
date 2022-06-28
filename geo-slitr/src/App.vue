@@ -15,6 +15,9 @@
         </td>
         <td>
           <button class="outfolderbtn" v-on:click="selectoutfolder" v-bind:disabled="running">Output Folder</button>
+          <br><br>
+          <input type="checkbox" v-model="geocopy" class="geocopycheck">
+          <label class="geocopylabel">GeoCopy</label>
         </td>
         <td style="min-width: 120px">
           <span class="secondarymsg" v-bind:title="outputfolder">
@@ -38,29 +41,49 @@
       </div>
     </div><br>
 
-    <table style="margin:auto;">
+    <table style="margin:auto;" v-show="geocopy">
       <tr>
         <td>
-          <input type="checkbox" id="cb1" name="geocopy" v-model="geocopy" class="geocopycheck">
-          <label class="geocopylabel">GeoCopy</label>
+          <button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder" v-bind:disabled="running">GeoJSONs Folder ({{ totalgjs }})</button>
+        </td>
+        <td>
+          <span class="secondarymsg" v-bind:title="geojsonsfolder">
+            {{ getBaseName(geojsonsfolder).length > 20 ? getBaseName(geojsonsfolder).substring(0, 20) + '...' : getBaseName(geojsonsfolder) }}
+          </span>
+        </td>
+        <td>
+          <span class="primarymsg">Buffer (m): </span>
+          <span><input type="number" v-model="buffer" style="width: 60px;" v-bind:disabled="running" min="0" max="1000"></span>
         </td>
       </tr>
     </table>
 
-    <button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder" v-bind:disabled="running">GeoJSONs Folder ({{ totalgjs }})</button>
-    <span class="secondarymsg" v-bind:title="geojsonsfolder">
-      {{ getBaseName(geojsonsfolder).length > 20 ? getBaseName(geojsonsfolder).substring(0, 20) + '...' : getBaseName(geojsonsfolder) }}
-    </span>
-
-    <div class="primarymsg">
-      <span>Buffer (m): </span>
-      <span><input type="number" v-model="buffer" style="width: 60px;" v-bind:disabled="running" min="0" max="1000"></span>
-    </div><br>
-    <div class="secondarymsg">Photos Came Across: {{ imagescameacross }}</div>
-    <div class="secondarymsg">GeoPhotos Copied: {{ imagescopied }}</div><br>
+    <table style="margin:auto;">
+      <tr>
+        <td><div class="secondarymsg">Photos Came Across: {{ imagescameacross }}</div></td>
+        <td><div class="secondarymsg">Images Catalogued: {{ imagescatalogued }}</div></td>
+        <td><div class="secondarymsg" v-show="geocopy">GeoPhotos Copied: {{ imagescopied }}</div></td>
+      </tr>
+      <tr>
+        <td><div class="secondarymsg">Started: {{ startedtimestring }}</div></td>
+        <td><div class="secondarymsg">Finished: {{ finishedtimestring }}</div></td>
+        <td><div class="secondarymsg">Elapsed: {{ elapsedtimestring }}</div></td>
+      </tr>
+    </table><br>
+    
     <div class="primarymsg">{{ statusmsg }}</div>
     <button class="startbtn" v-on:click="startrunning" v-bind:disabled="running">Start</button>
-    <button class="xitbtn" v-on:click="exitnow" id="xitbtn">Exit</button>
+    <button class="xitbtn" v-on:click="tryingtoexit = true" id="xitbtn">Exit</button>
+
+    <div class="confirmexit" v-show="tryingtoexit">
+      <div class="confirmdialog">
+        <div class="textcontent">
+          <span>Are you Sure Want To Exit?</span><br><br>
+          <button v-on:click="exitnow">YES</button>
+          <button v-on:click="tryingtoexit = false">NO</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -164,6 +187,13 @@ export default defineComponent({
 
     const imagescameacross = ref(0);
     const imagescopied = ref(0);
+    const imagescatalogued = ref(0);
+
+    const startedtimestring = ref('');
+    const finishedtimestring = ref('');
+    const elapsedtimestring = ref('');
+
+    const tryingtoexit = ref(false);
 
     const buffer = ref(100);
 
@@ -369,10 +399,11 @@ export default defineComponent({
     return {
       systeminfo1, systeminfo2, systeminfo3, getBaseName,
       running, geocopy, imagescameacross, imagescopied, 
+      imagescatalogued, startedtimestring, finishedtimestring, elapsedtimestring, 
       outputfolder, geojsonsfolder, totalgjs, buffer,
       selectoutfolder, selectgeojsonsfolder,
       sourcefolders, addsourcefolder, removefolder,
-      statusmsg, startrunning, exitnow
+      statusmsg, startrunning, exitnow, tryingtoexit
     }
   },
 })

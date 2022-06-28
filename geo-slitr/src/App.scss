@@ -29,7 +29,7 @@ $secondarythemecolor: rgb(73, 72, 57);
   color: $primarythemecolor;
   text-shadow: 4px 4px rgba($secondarythemecolor, 0.2);
 
-  -webkit-app-region: drag;
+  // -webkit-app-region: drag;
 }
 
 .movable {
@@ -166,12 +166,13 @@ $foldersheight: 100px;
   }
 }
 
-#cb1 {
-  transform: scale(1.5);
-  accent-color: red;
+.geocopycheck {
+  transform: scale(1.2);
+  accent-color: $primarythemecolor;
 }
 
 .geocopylabel {
+  font-size: 14px;
   color: $primarythemecolor;
 }
 
@@ -227,4 +228,39 @@ $foldersheight: 100px;
 
 .primarymsg {
   color: rgba($primarythemecolor, 0.7);
+}
+
+.confirmexit {
+  display: block;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 1;
+
+  background-color: rgba(50, 50, 50, 0.9);
+
+  > .confirmdialog {
+    position: relative;
+    top: 50%;
+    height: 100px;
+    background-color: rgba($primarythemecolor, 0.5);
+
+    transform: translate(0%, -50%);
+    
+    > .textcontent {
+      position: relative;
+      top: 50%;
+      color: white;
+      font-size: 14px;
+
+      transform: translate(0%, -50%);
+
+      > button {
+        padding: 4px;
+        margin: 4px;
+      }
+    }
+  }
 }

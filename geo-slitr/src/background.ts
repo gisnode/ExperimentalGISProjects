@@ -15,8 +15,7 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
-    // width: 600,
-    width: 800,
+    width: 600,
     // height: 500,
     height: 700,
     webPreferences: {
