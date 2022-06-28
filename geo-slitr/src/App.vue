@@ -231,6 +231,18 @@ export default defineComponent({
       getBinaryPath();
     });
 
+    let timerObj: any = {
+      moment: {},
+      interval: {}
+    };
+    const startElapsedCounter = () => {
+      timerObj.moment = moment();
+
+      timerObj.interval = setInterval(() => {
+        elapsedtimestring.value = moment().diff(timerObj.moment).toString();
+      }, 1000);
+    }
+
     const DBDateTimeString = ref('');
     const preRequisites = () => {
       let currentDateTimeSuffix = moment().format('YYYY-MM-DD@HH-mm-ss');
@@ -338,10 +350,13 @@ export default defineComponent({
       running.value = true;
       statusmsg.value = 'Running';
 
+      startElapsedCounter();
       checkNStartSliting();
     }
     
     const checkNStartSliting = async () => {
+      startedtimestring.value = moment().format('YYYY-MM-DD@HH-mm-ss');
+
       for(let i = 0; i < sourcefolders.value.length; i++){
         // console.log(sourcefolders.value[i].path);
 
@@ -372,8 +387,15 @@ export default defineComponent({
         } catch (e) {}
       }
 
+      recordSourceFoldersInDB();
+
+      outputfolder.value = path.dirname(outputfolder.value);
+
+      finishedtimestring.value = moment().format('YYYY-MM-DD@HH-mm-ss');
       statusmsg.value = 'Completed';
       running.value = false;
+
+      clearInterval(timerObj.interval);
     }
 
     const checkNDoTwoJobs = (imagePath: any) => new Promise(resolve => {
@@ -454,9 +476,18 @@ export default defineComponent({
     });
 
     const insertRawCamera = (imagePath: any) => {
-      const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+      const db = new Database(path.join(outputfolder.value, `Cameras-${DBDateTimeString.value}.db`));
       db.prepare('INSERT INTO rawcameras (camera, parentfolder) VALUES (?, ?)')
       .run(path.basename(imagePath), path.dirname(imagePath)).lastInsertRowid;
+    }
+
+    const recordSourceFoldersInDB = () => {
+      const db = new Database(path.join(outputfolder.value, `Cameras-${DBDateTimeString.value}.db`));
+
+      for(let i = 0; i < sourcefolders.value.length; i++){
+        db.prepare('INSERT INTO sourcefolders (folderpath) VALUES (?)')
+        .run(sourcefolders.value[i].path).lastInsertRowid;
+      }
     }
 
     const exitnow = () => {
