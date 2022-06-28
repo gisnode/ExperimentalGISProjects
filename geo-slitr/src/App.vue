@@ -106,6 +106,8 @@ import fg from 'fast-glob';
 import * as turf from '@turf/turf';
 import { stringify } from 'csv-stringify/sync';
 
+import Database from 'better-sqlite3';
+
 export default defineComponent({
   setup() {
     const systeminfo1 = ref('');
@@ -123,7 +125,7 @@ export default defineComponent({
     ]);
 
     const running = ref(false);
-    const geocopy = ref(true);
+    const geocopy = ref(false);
 
     const addsourcefolder = () => {
       ipcRenderer.send('open-folder', ['Select Parent Folder', 'sourcefolder']);
@@ -180,9 +182,11 @@ export default defineComponent({
     });
 
     const calcGeoJSONs = (gjpath: any) => {
-      totalgjs.value = fs.readdirSync(gjpath).filter(entry => {
-        return path.extname(entry).toLowerCase() == '.geojson'
-      }).length;
+      if(geocopy.value){
+        totalgjs.value = fs.readdirSync(gjpath).filter(entry => {
+          return path.extname(entry).toLowerCase() == '.geojson'
+        }).length;
+      }
     }
 
     const defaultMsg = 'Click on Start';
@@ -225,6 +229,32 @@ export default defineComponent({
     onMounted(() => {
       getBinaryPath();
     });
+
+    const setUpDatabase = () => {
+      const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+
+      const createTable1 = `CREATE TABLE IF NOT EXISTS gnsscameras (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        camera TEXT,
+        lon REAL, lat REAL, alt REAL,
+        path TEXT
+      )`;
+
+      const createTable2 = `CREATE TABLE IF NOT EXISTS rawcameras (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        camera TEXT,
+        parentfolder TEXT
+      )`;
+
+      const createTable3 = `CREATE TABLE IF NOT EXISTS sourcefolders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        folderpath TEXT
+      )`;
+
+      db.exec(createTable1);
+      db.exec(createTable2);
+      db.exec(createTable3);
+    }
 
     let gjsObjArry: any = [];
     let gjsCSVInfo: any = {};
@@ -281,11 +311,12 @@ export default defineComponent({
 
       calcGeoJSONs(geojsonsfolder.value);
 
-      if(totalgjs.value == 0){
+      if(geocopy.value && totalgjs.value == 0){
         showTempMsg('Empty GeoJSONs Folder', 2);
         return;
       }
 
+      setUpDatabase();
       initialSetup();
 
       // console.log(gjsObjArry);
@@ -296,10 +327,10 @@ export default defineComponent({
       running.value = true;
       statusmsg.value = 'Running';
 
-      checkNStartCopying();
+      checkNStartSliting();
     }
     
-    const checkNStartCopying = async () => {
+    const checkNStartSliting = async () => {
       for(let i = 0; i < sourcefolders.value.length; i++){
         // console.log(sourcefolders.value[i].path);
 

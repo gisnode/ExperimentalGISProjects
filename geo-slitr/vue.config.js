@@ -1,11 +1,16 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
+  configureWebpack: config => {
+    config.externals = {
+        'better-sqlite3': 'commonjs better-sqlite3'
+    };
+  },
   transpileDependencies: true,
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
         win: {
-          icon: 'src/assets/icon.jpg'
+          icon: 'src/assets/icon.png'
         },
         extraResources: [
           {
@@ -17,6 +22,7 @@ module.exports = defineConfig({
           }
         ]
       },
+      externals: [ 'better-sqlite3' ],
       nodeIntegration: true
     }
   }
