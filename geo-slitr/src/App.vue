@@ -199,9 +199,9 @@ export default defineComponent({
     const imagescopied = ref(0);
     const imagescatalogued = ref(0);
 
-    const startedtimestring = ref('');
-    const finishedtimestring = ref('');
-    const elapsedtimestring = ref('');
+    const startedtimestring = ref('-');
+    const finishedtimestring = ref('-');
+    const elapsedtimestring = ref('-');
 
     const tryingtoexit = ref(false);
 
@@ -281,9 +281,11 @@ export default defineComponent({
 
     let gjsObjArry: any = [];
     let gjsCSVInfo: any = {};
+    let imagesCounter: any = {};
     const initialGJSetup = () => {
       gjsObjArry = [];
       gjsCSVInfo = {};
+      imagesCounter = {};
       
       const gjs = fs.readdirSync(geojsonsfolder.value).filter(entry => {
         return path.extname(entry).toLowerCase() == '.geojson'
@@ -293,6 +295,7 @@ export default defineComponent({
         let gjName = path.parse(gjs[i]).name;
 
         gjsCSVInfo[gjName] = [];
+        imagesCounter[gjName] = 1;
 
         let gjDir = path.join(outputfolder.value, gjName);
         // console.log(gjDir);
@@ -450,15 +453,18 @@ export default defineComponent({
                 if(turf.booleanWithin(ptFeat, featbuff)){
                   let gjName = gjsObjArry[i]['name'];
                   let targetDir = gjsObjArry[i]['dir'];
-                  let imageName = path.basename(imagePath);
+                  // let imageName = path.basename(imagePath);
   
+                  let imageName = `PROC${String(imagesCounter[gjName]).padStart(4, '0')}.JPG`;
+
                   gjsCSVInfo[gjName] = [
                     ...gjsCSVInfo[gjName],
                     [imageName, gpsLon, gpsLat]
                   ];
                   // console.log(imagePath, targetDir, imageName);
-  
+
                   fs.copyFile(imagePath, path.join(targetDir, imageName), () => {
+                    imagesCounter[gjName] = imagesCounter[gjName] + 1;
                     imagescopied.value = imagescopied.value + 1;
                     resolve(0);
                   });
