@@ -10,9 +10,9 @@
       <tr>
         <td>
           <div class="systeminfo">
-            <div>{{ systeminfo1 }}</div>
-            <div>{{ systeminfo2 }}</div>
-            <div>{{ systeminfo3 }}</div>
+            <div>Hostname: {{ systeminfo1 }}</div>
+            <div>User: {{ systeminfo2 }}</div>
+            <div>Machine: {{ systeminfo3 }}</div>
           </div>
         </td>
         <td>
@@ -106,6 +106,7 @@ import fg from 'fast-glob';
 import * as turf from '@turf/turf';
 import { stringify } from 'csv-stringify/sync';
 
+import moment from 'moment';
 import Database from 'better-sqlite3';
 
 export default defineComponent({
@@ -115,13 +116,13 @@ export default defineComponent({
     const systeminfo3 = ref('');
 
     onMounted(() => {
-      systeminfo1.value = `HostName: ${os.hostname()} `;
-      systeminfo2.value = `User: ${os.userInfo().username}`;
-      systeminfo3.value = `Machine: ${os.arch()} ${os.platform()} ${os.endianness()}`;
+      systeminfo1.value = `${os.hostname()} `;
+      systeminfo2.value = `${os.userInfo().username}`;
+      systeminfo3.value = `${os.arch()} ${os.platform()} ${os.endianness()}`;
     });
 
     const sourcefolders: any = ref([
-      // { id: '1', path: 'D:/TESTS/slitrtstmed/imgs' }
+      { id: '1', path: 'D:/TESTS/slitrtstmed/imgs' }
     ]);
 
     const running = ref(false);
@@ -230,8 +231,16 @@ export default defineComponent({
       getBinaryPath();
     });
 
-    const setUpDatabase = () => {
-      const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+    const DBDateTimeString = ref('');
+    const preRequisites = () => {
+      let currentDateTimeSuffix = moment().format('YYYY-MM-DD@HH-mm-ss');
+
+      let timedfolderout = path.join(outputfolder.value, currentDateTimeSuffix);
+      fs.mkdirSync(timedfolderout, { recursive: true });
+      outputfolder.value = timedfolderout;
+
+      DBDateTimeString.value = currentDateTimeSuffix;
+      const db = new Database(path.join(outputfolder.value, `Cameras-${DBDateTimeString.value}.db`));
 
       const createTable1 = `CREATE TABLE IF NOT EXISTS gnsscameras (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -304,7 +313,7 @@ export default defineComponent({
         return;
       }
 
-      if(geojsonsfolder.value == ''){
+      if(geocopy.value && geojsonsfolder.value == ''){
         showTempMsg('Select GeoJSONs Folder', 2);
         return;
       }
@@ -316,13 +325,14 @@ export default defineComponent({
         return;
       }
 
-      setUpDatabase();
+      preRequisites();
       
       if(geocopy.value) initialGJSetup();
 
       // console.log(gjsObjArry);
 
       imagescameacross.value = 0;
+      imagescatalogued.value = 0;
       imagescopied.value = 0;
 
       running.value = true;
@@ -401,7 +411,7 @@ export default defineComponent({
             // console.log(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath);
 
             // Catalogue GeoPhotos Into Database
-            const db = new Database(path.join(outputfolder.value, 'cameras.db'));
+            const db = new Database(path.join(outputfolder.value, `Cameras-${DBDateTimeString.value}.db`));
             db.prepare('INSERT INTO gnsscameras (camera, lon, lat, alt, path) VALUES (?, ?, ?, ?, ?)')
             .run(path.basename(imagePath), gpsLon, gpsLat, gpsAlt, imagePath).lastInsertRowid;
 
