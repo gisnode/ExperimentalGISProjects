@@ -24,7 +24,7 @@
           <br>
         </td>
         <td>
-          <input type="checkbox" v-model="geocopy" class="geocopycheck">
+          <input type="checkbox" v-model="geocopy" class="geocopycheck" v-bind:disabled="running">
           <label class="geocopylabel">GeoCopy</label>
         </td>
       </tr>
@@ -64,12 +64,14 @@
     <table style="margin:auto;">
       <tr>
         <td><div class="secondarymsg">Photos Came Across: {{ imagescameacross }}</div></td>
-        <td><div class="secondarymsg">Images Catalogued: {{ imagescatalogued }}</div></td>
-        <td><div class="secondarymsg" v-show="geocopy">GeoPhotos Copied: {{ imagescopied }}</div></td>
+        <td><div class="secondarymsg">Started: {{ startedtimestring }}</div></td>
       </tr>
       <tr>
-        <td><div class="secondarymsg">Started: {{ startedtimestring }}</div></td>
+        <td><div class="secondarymsg">Images Catalogued: {{ imagescatalogued }}</div></td>
         <td><div class="secondarymsg">Finished: {{ finishedtimestring }}</div></td>
+      </tr>
+      <tr>
+        <td><div class="secondarymsg" v-show="geocopy">GeoPhotos Copied: {{ imagescopied }}</div></td>
         <td><div class="secondarymsg">Elapsed: {{ elapsedtimestring }}</div></td>
       </tr>
     </table><br>
@@ -454,11 +456,14 @@ export default defineComponent({
                     ...gjsCSVInfo[gjName],
                     [imageName, gpsLon, gpsLat]
                   ];
+                  // console.log(imagePath, targetDir, imageName);
   
                   fs.copyFile(imagePath, path.join(targetDir, imageName), () => {
                     imagescopied.value = imagescopied.value + 1;
                     resolve(0);
                   });
+                } else {
+                  resolve(0);
                 }
               }
             } else {
