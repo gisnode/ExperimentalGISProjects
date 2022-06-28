@@ -19,13 +19,14 @@ $secondarythemecolor: rgb(73, 72, 57);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: $primarythemecolor;
   margin-top: 40px;
 }
 
 .title {
   font-family: 'Lucida Calligraphy';
   font-size: 25px;
+  
+  color: $primarythemecolor;
   text-shadow: 4px 4px rgba($secondarythemecolor, 0.2);
 
   -webkit-app-region: drag;
@@ -59,11 +60,11 @@ td {
   color: white;
 
   &:active {
-      background-color: rgba(187, 38, 207, 0.486);
+    background-color: rgba(187, 38, 207, 0.486);
   }
 
   &:disabled {
-      background-color: rgba(69, 65, 70, 0.486);
+    background-color: rgba(69, 65, 70, 0.486);
   }
 }
 
@@ -163,6 +164,15 @@ $foldersheight: 100px;
       }
     }
   }
+}
+
+#cb1 {
+  transform: scale(1.5);
+  accent-color: red;
+}
+
+.geocopylabel {
+  color: $primarythemecolor;
 }
 
 /* Width */

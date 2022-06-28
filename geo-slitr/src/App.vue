@@ -38,9 +38,12 @@
       </div>
     </div><br>
 
-    <table>
+    <table style="margin:auto;">
       <tr>
-        <td></td>
+        <td>
+          <input type="checkbox" id="cb1" name="geocopy" v-model="geocopy" class="geocopycheck">
+          <label class="geocopylabel">GeoCopy</label>
+        </td>
       </tr>
     </table>
 
@@ -94,6 +97,7 @@ export default defineComponent({
     ]);
 
     const running = ref(false);
+    const geocopy = ref(false);
 
     const addsourcefolder = () => {
       ipcRenderer.send('open-folder', ['Select Parent Folder', 'sourcefolder']);
@@ -364,7 +368,7 @@ export default defineComponent({
 
     return {
       systeminfo1, systeminfo2, systeminfo3, getBaseName,
-      running, imagescameacross, imagescopied, 
+      running, geocopy, imagescameacross, imagescopied, 
       outputfolder, geojsonsfolder, totalgjs, buffer,
       selectoutfolder, selectgeojsonsfolder,
       sourcefolders, addsourcefolder, removefolder,
