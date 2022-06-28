@@ -3,7 +3,9 @@
     <div class="movable">
       <svg xmlns="http://www.w3.org/2000/svg" height="48" width="48"><path d="m24 44-8.15-8.15 2.2-2.2 4.45 4.45v-9.45h3v9.45l4.45-4.45 2.2 2.2ZM11.9 31.9 4 24l7.95-7.95 2.2 2.2L9.9 22.5h9.45v3H9.9l4.2 4.2Zm24.2 0-2.2-2.2 4.2-4.2h-9.4v-3h9.4l-4.2-4.2 2.2-2.2L44 24ZM22.5 19.3V9.9l-4.2 4.2-2.2-2.2L24 4l7.9 7.9-2.2 2.2-4.2-4.2v9.4Z"/></svg>
     </div>
-    <div class="title">GEO SLITR</div><br>
+    <div class="title">GEO SLITR</div>
+    <br>
+
     <table style="margin:auto;">
       <tr>
         <td>
@@ -15,14 +17,15 @@
         </td>
         <td>
           <button class="outfolderbtn" v-on:click="selectoutfolder" v-bind:disabled="running">Output Folder</button>
-          <br><br>
-          <input type="checkbox" v-model="geocopy" class="geocopycheck">
-          <label class="geocopylabel">GeoCopy</label>
-        </td>
-        <td style="min-width: 120px">
+          <br>
           <span class="secondarymsg" v-bind:title="outputfolder">
             {{ getBaseName(outputfolder).length > 20 ? getBaseName(outputfolder).substring(0, 20) + '...' : getBaseName(outputfolder) }}
           </span>
+          <br>
+        </td>
+        <td>
+          <input type="checkbox" v-model="geocopy" class="geocopycheck">
+          <label class="geocopylabel">GeoCopy</label>
         </td>
       </tr>
     </table>
@@ -41,12 +44,11 @@
       </div>
     </div><br>
 
-    <table style="margin:auto;" v-show="geocopy">
+    <table style="margin:auto;" v-if="geocopy">
       <tr>
         <td>
           <button class="gjsfldrbtn" v-on:click="selectgeojsonsfolder" v-bind:disabled="running">GeoJSONs Folder ({{ totalgjs }})</button>
-        </td>
-        <td>
+          <br>
           <span class="secondarymsg" v-bind:title="geojsonsfolder">
             {{ getBaseName(geojsonsfolder).length > 20 ? getBaseName(geojsonsfolder).substring(0, 20) + '...' : getBaseName(geojsonsfolder) }}
           </span>

@@ -19,7 +19,7 @@ $secondarythemecolor: rgb(73, 72, 57);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .title {
@@ -29,12 +29,12 @@ $secondarythemecolor: rgb(73, 72, 57);
   color: $primarythemecolor;
   text-shadow: 4px 4px rgba($secondarythemecolor, 0.2);
 
-  // -webkit-app-region: drag;
+  -webkit-app-region: drag;
 }
 
 .movable {
   position: absolute;
-  top: 30px;
+  top: 10px;
   right: 60px;
   z-index: 99;
   
