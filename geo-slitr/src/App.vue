@@ -57,6 +57,7 @@
         </td>
       </tr>
     </table>
+    <br>
 
     <table style="margin:auto;">
       <tr>
@@ -120,7 +121,7 @@ export default defineComponent({
     ]);
 
     const running = ref(false);
-    const geocopy = ref(false);
+    const geocopy = ref(true);
 
     const addsourcefolder = () => {
       ipcRenderer.send('open-folder', ['Select Parent Folder', 'sourcefolder']);
