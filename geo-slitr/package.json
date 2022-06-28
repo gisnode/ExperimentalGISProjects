@@ -1,6 +1,10 @@
 {
   "name": "geo-slitr",
   "version": "0.1.0",
+  "description": "geo-slitr",
+  "author": {
+    "name": "gisnode"
+  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
