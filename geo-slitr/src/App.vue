@@ -126,7 +126,7 @@ export default defineComponent({
     });
 
     const sourcefolders: any = ref([
-      { id: '1', path: 'D:/TESTS/slitrtstmed/imgs' }
+      // { id: '1', path: 'D:/TESTS/slitrtstmed/imgs' }
     ]);
 
     const running = ref(false);
@@ -396,9 +396,13 @@ export default defineComponent({
 
       recordSourceFoldersInDB();
 
+      finishedtimestring.value = moment().format('YYYY-MM-DD@HH-mm-ss');
+
+      let timeDataString = `Started At ${startedtimestring.value}\r\nCompleted At ${finishedtimestring.value}\r\nTime Elapsed: ${elapsedtimestring.value}`;
+      fs.writeFileSync(path.join(outputfolder.value, `Completed At ${finishedtimestring.value}.txt`), timeDataString);
+
       outputfolder.value = path.dirname(outputfolder.value);
 
-      finishedtimestring.value = moment().format('YYYY-MM-DD@HH-mm-ss');
       statusmsg.value = 'Completed';
       running.value = false;
 
